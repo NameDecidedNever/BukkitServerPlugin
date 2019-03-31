@@ -1,0 +1,5 @@
+package com.ndn.bukkitplugin.ndnserverplugin;
+
+public interface CommandHandler {
+	boolean handleCommand(String command);
+}

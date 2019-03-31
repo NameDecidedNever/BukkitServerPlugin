@@ -1,0 +1,21 @@
+package com.ndn.bukkitplugin.ndnserverplugin.datautils;
+
+public class Table {
+	
+	public static String DATA_FOLDER_NAME = "NDNServerData";
+	
+	private String tableName;
+	private boolean isLinked = false;
+	
+	public Table(String tableName) {
+		this.tableName = tableName;
+	}
+	
+	
+	public boolean linkToFile() {
+		isLinked = true;
+		
+		return this.isLinked;
+	}
+
+}

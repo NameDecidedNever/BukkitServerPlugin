@@ -1,0 +1,3 @@
+name: NDNServerPlugin
+main: com.ndn.bukkitplugin.ndnserverplugin.NDNServerPlugin
+version: 0.1

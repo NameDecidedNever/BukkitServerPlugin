@@ -1,0 +1,11 @@
+package com.ndn.bukkitplugin.ndnserverplugin;
+
+public class AccountCommands implements CommandHandler{
+
+	@Override
+	public boolean handleCommand(String[] commandArgs) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}

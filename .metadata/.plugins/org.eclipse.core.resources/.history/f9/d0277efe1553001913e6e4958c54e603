@@ -1,0 +1,11 @@
+package com.ndn.bukkitplugin.ndnserverplugin.datautils;
+
+import java.sql.*;
+
+public class DataManager {
+	
+	public DataManager() {
+		
+	}
+
+}

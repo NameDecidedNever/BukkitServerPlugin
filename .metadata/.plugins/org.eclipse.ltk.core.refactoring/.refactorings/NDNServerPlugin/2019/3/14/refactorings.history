@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move element &apos;plugin.yml&apos; to &apos;NDNServerPlugin/src/main/java&apos;&#x0D;&#x0A;- Original project: &apos;NDNServerPlugin&apos;&#x0D;&#x0A;- Destination element: &apos;NDNServerPlugin/src/main/java&apos;&#x0D;&#x0A;- Original element: &apos;plugin.yml&apos;&#x0D;&#x0A;- Update references to refactored element" description="Move file" destination="/src\/main\/java" element1="src/main/resources/plugin.yml" files="1" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1553996592752" units="0" version="1.0"/>
+</session>

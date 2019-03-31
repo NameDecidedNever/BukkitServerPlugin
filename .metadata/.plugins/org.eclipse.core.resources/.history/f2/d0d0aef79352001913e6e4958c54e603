@@ -1,0 +1,11 @@
+package com.ndn.bukkitplugin.ndnserverplugin.datautils;
+
+public class Table {
+	
+	private String tableName;
+	
+	public Table(String tableName) {
+		this.tableName = tableName;
+	}
+
+}

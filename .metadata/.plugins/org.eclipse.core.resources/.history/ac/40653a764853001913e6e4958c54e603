@@ -1,0 +1,95 @@
+package com.ndn.bukkitplugin.ndnserverplugin.datautils;
+
+import java.sql.*;
+
+public class DataManager {
+
+	// JDBC driver name and database URL
+	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+	static final String DB_URL = "jdbc:mysql://localhost/minecraft-data";
+
+	// Database credentials
+	static final String USER = "plugin";
+	static final String PASS = "imthemcplugin";
+	
+	//SQL Statements
+	static final String SQL_ADD_PLAYER = "INSERT INTO players (accountid, hashword, isverified, username, verificationcode) VALUES (?, ?, ?, ?, ?)";
+	static final String SQL_ADD_ACCOUNT = "INSERT INTO accounts (balance, credit, name) VALUES (?, ?, ?)";
+	
+	Connection conn = null;
+	
+	private static DataManager instance = null;
+
+	public DataManager() {
+	      try {
+	    	  Class.forName("com.mysql.jdbc.Driver");
+		      System.out.println("Connecting to a selected database...");
+		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      System.out.println("Connected database successfully...");
+	      } catch (Exception e) {
+	    	  e.printStackTrace();
+	      }
+	}
+	
+	public static DataManager getInstance() {
+		if(instance == null) {
+			instance = new DataManager();
+		}
+		return instance;
+	}
+	
+	
+	public boolean makePayExchange(int accountId1, int accountId2) {
+		return false;
+	}
+	
+	public int createPersonalAccount(String username) {
+		try {
+			
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_ADD_ACCOUNT);
+			preparedStmt.setInt(1, 0);
+			preparedStmt.setInt(2, 0);
+			preparedStmt.setString(3, username + "'s Account");
+			
+			} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public void addPlayerIfNotExists(String username) {
+		 try {
+			 
+			Statement stmt = conn.createStatement();
+			
+			String sql = "SELECT username FROM players";
+		    ResultSet rs = stmt.executeQuery(sql);
+		    
+		    boolean playerExists = false;
+		    
+		    while(rs.next()) {
+		    	if(rs.getString("username").equals(username)) {
+		    		playerExists = true;
+		    	}
+		    }
+			
+		    rs.close();
+		    
+		    if(!playerExists) {
+		    	int accountId = createPersonalAccount(username);
+		    	String verificationcode = "";
+		    	PreparedStatement preparedStmt = conn.prepareStatement(SQL_ADD_PLAYER);  
+		    	preparedStmt.setInt(1, accountId);
+		    	preparedStmt.setString(2, "");
+		    	preparedStmt.setInt(3, 0);
+		    	preparedStmt.setString(4, username);
+		    	preparedStmt.setString(5, verificationcode);
+		    	preparedStmt.executeUpdate(sql);
+		    }
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+}

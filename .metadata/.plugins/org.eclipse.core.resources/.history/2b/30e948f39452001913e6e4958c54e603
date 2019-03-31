@@ -1,0 +1,11 @@
+package com.ndn.bukkitplugin.ndnserverplugin.datautils;
+
+import java.util.HashMap;
+
+public class TableManager {
+	
+	HashMap<String, Table> loadedTables = new HashMap<String, Table>();
+	
+	
+
+}

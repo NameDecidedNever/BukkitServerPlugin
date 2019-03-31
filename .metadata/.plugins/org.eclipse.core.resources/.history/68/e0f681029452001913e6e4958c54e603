@@ -1,0 +1,12 @@
+package com.ndn.bukkitplugin.ndnserverplugin.datautils;
+
+public class Table {
+	
+	private String tableName;
+	private boolean isLinked = false;
+	
+	public Table(String tableName) {
+		this.tableName = tableName;
+	}
+
+}
