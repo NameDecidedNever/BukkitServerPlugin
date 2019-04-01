@@ -1,0 +1,13 @@
+name: NDNServerPlugin
+main: com.ndn.bukkitplugin.ndnserverplugin.NDNServerPlugin
+version: 0.1
+commands:
+   account.*:
+      description: Root command for the accounts system.
+      usage: /<command>
+    account.balance:
+      description: Check your account balance.
+      usage: /<command>
+    account.send:
+         description: Make a monetary transaction to another player.
+      usage: /<command> [Player] [Amount]
