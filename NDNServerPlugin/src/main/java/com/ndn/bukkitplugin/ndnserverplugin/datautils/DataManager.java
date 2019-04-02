@@ -20,8 +20,9 @@ public class DataManager {
 	static final String SQL_SELECT_ACCOUNT_BY_NAME = "SELECT * FROM `accounts` WHERE name = ?";
 	static final String SQL_SELECT_PLAYER_BY_NAME = "SELECT * FROM `players` WHERE username = ?";
 	static final String SQL_GET_BALANCE = "SELECT balance from `accounts` WHERE idaccounts = ?";
+	static final String SQL_GET_ACCOUNT_NAME_BY_ID = "SELECT name from `accounts` WHERE idaccounts = ?";
 	static final String SQL_UPDATE_BALANCE = "UPDATE `accounts` SET balance = ? WHERE idaccounts = ?";
-	static final String SQL_INSERT_TRANSACTION = "INSERT INTO `transactions` (sender, reciever, ammount, message) VALUES (?, ?, ?, ?)";
+	static final String SQL_INSERT_TRANSACTION = "INSERT INTO `transactions` (sender, reciever, amount, message, senderLabel, recieverLabel) VALUES (?, ?, ?, ?, ?, ?)";
 
 	Connection conn = null;
 
@@ -94,6 +95,20 @@ public class DataManager {
 			e.printStackTrace();
 		}
 	}
+	
+	public String getAccountName(int id) {
+		PreparedStatement preparedStmt;
+		try {
+		preparedStmt = conn.prepareStatement(SQL_GET_ACCOUNT_NAME_BY_ID);
+		preparedStmt.setInt(1, id);
+		ResultSet rs = preparedStmt.executeQuery();
+		rs.next();
+		return rs.getString("name");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "Un-named Account";
+	}
 
 	public boolean makePayExchange(int from, int to, double ammount, String message) {
 		ammount = Math.abs(ammount);
@@ -109,6 +124,8 @@ public class DataManager {
 				preparedStmt.setInt(2, to);
 				preparedStmt.setDouble(3, ammount);
 				preparedStmt.setString(4, message);
+				preparedStmt.setString(5, getAccountName(from));
+				preparedStmt.setString(6, getAccountName(to));
 				preparedStmt.execute();
 				return true;
 			} catch (SQLException e) {
