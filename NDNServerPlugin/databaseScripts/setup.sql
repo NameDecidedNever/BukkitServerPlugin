@@ -1,4 +1,5 @@
 CREATE DATABASE `minecraft-data` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */;
+USE `minecraft-data`;
 CREATE TABLE `accounts` (
   `idaccounts` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
