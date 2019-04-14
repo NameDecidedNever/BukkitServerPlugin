@@ -1,7 +1,10 @@
 name: NDNServerPlugin
 main: com.ndn.bukkitplugin.ndnserverplugin.NDNServerPlugin
-version: 0.1
+version: 0.2
 commands:
    account:
       description: Root command for the accounts system.
       usage: /<command>
+   pay:
+      description: Simple command to pay other players. Same as /account send
+      usage: /<command> [player] [amount]
