@@ -4,10 +4,6 @@ import org.bukkit.Location;
 
 public class TeleportLogic {
 	public static final double TELE_COSTPERBLOCK = .05;
-	//code these in for a world
-	public static final int SPAWN_X = 140;
-	public static final int SPAWN_Y = 64;
-	public static final int SPAWN_Z = -75;
 	public static final double MINIMUM_PROXIMITY = 200;
 	
 	public static double getTeleportCost(Location l1, Location l2) {
