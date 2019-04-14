@@ -1,4 +1,4 @@
-package com.ndn.bukkitplugin.ndnserverplugin;
+package com.ndn.bukkitplugin.ndnutils;
 
 import java.util.Random;
 

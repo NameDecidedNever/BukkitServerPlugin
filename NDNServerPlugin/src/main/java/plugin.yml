@@ -1,10 +1,17 @@
 name: NDNServerPlugin
 main: com.ndn.bukkitplugin.ndnserverplugin.NDNServerPlugin
 version: 0.2
+author: NDN Dev Group
 commands:
    account:
       description: Root command for the accounts system.
-      usage: /<command>
+      usage: /<command> [subcommand(help, send, bal)] [player] [amount] [message]
    pay:
       description: Simple command to pay other players. Same as /account send
       usage: /<command> [player] [amount]
+   clearweather:
+      description: Clear the skies with the power of money. Makes rain dissapear for $10
+      usage: /<command>
+   spawn:
+      description: Teleport to spawn for a high cost
+      usage: /<command>

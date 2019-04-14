@@ -14,13 +14,17 @@ import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 
 public class NDNServerPlugin extends JavaPlugin implements Listener {
 	MoneyCommandExecutor mce;
+	SimplePaidCommandExecutor spce;
 	
 	@Override
 	public void onEnable() {
 		// TODO Insert logic to be performed when the plugin is enabled
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 		mce = new MoneyCommandExecutor(this);
+		spce = new SimplePaidCommandExecutor(this);
 		getCommand("account").setExecutor(mce);
+		getCommand("spawn").setExecutor(spce);
+		getCommand("clearweather").setExecutor(spce);
 	}
 
 	@Override
@@ -46,7 +50,7 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 					}
 				}
 				
-				return mce.sendMoney(sender, args[0], Double.parseDouble(args[1]), reason.substring(0, reason.length()-1));
+				return mce.sendMoney(sender, args[0], Double.parseDouble(args[1]), reason.trim());
 			}
 			sender.sendMessage("Invalad Arguments in the pay command, must be /pay [player] [amount]");
 			return true;

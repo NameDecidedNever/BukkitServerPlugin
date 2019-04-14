@@ -26,8 +26,10 @@ public class MoneyCommandExecutor implements CommandExecutor {
 						DataManager.getInstance().getPlayerPrimaryAccount(player.getName()),
 						DataManager.getInstance().getPlayerPrimaryAccount(reciver), amount, reason)) {
 					player.sendMessage(ChatColor.GREEN + "Transaction Complete!");
-					Bukkit.getPlayer(reciver).sendMessage(ChatColor.GREEN + "You've just recieved " + ChatColor.YELLOW
-							+ "$" + amount + ChatColor.GREEN + " from " + ChatColor.BLUE + player.getName() + " '" + reason + "'");
+					Bukkit.getPlayer(reciver)
+							.sendMessage(ChatColor.GREEN + "You've just recieved " + ChatColor.YELLOW + "$" + amount
+									+ ChatColor.GREEN + " from " + ChatColor.BLUE + player.getName() + " '" + reason
+									+ "'");
 				} else {
 					player.sendMessage(ChatColor.RED + "Insufficient Funds");
 				}
@@ -41,6 +43,7 @@ public class MoneyCommandExecutor implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		//TODO: implement take command for OPs
 		if (sender instanceof Player) {
 			DataManager dataManger = DataManager.getInstance();
 			Player player = (Player) sender;
@@ -66,6 +69,11 @@ public class MoneyCommandExecutor implements CommandExecutor {
 
 				return sendMoney(sender, args[1], Double.parseDouble(args[2]), reason.trim());
 
+			} else if(player.isOp() && args[0].equals("take")) {
+				DataManager.getInstance().makePayExchange(DataManager.getInstance().getPlayerPrimaryAccount(args[1]),
+						DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), Double.parseDouble(args[2]), "Taken by admin");
+				sender.sendMessage("You took $" + args[2] + " from " + args[1]);
+				return true;
 			} else {
 				sendSenderHelpText(sender);
 				return true;
@@ -78,10 +86,13 @@ public class MoneyCommandExecutor implements CommandExecutor {
 	}
 
 	public void sendSenderHelpText(CommandSender sender) {
-		sender.sendMessage("Account Commands:");
+		sender.sendMessage(ChatColor.BLUE + "Account Commands:");
 		sender.sendMessage("(send,pay) [player] [amount] [message(optional)] : send money to another player");
 		sender.sendMessage("(bal,balance) : displays balance");
 		sender.sendMessage("help : displays this text");
+		if (sender.isOp()) {
+			sender.sendMessage("take(ops only) [player] [amount] : takes money from an account into yours");
+		}
 
 	}
 }
