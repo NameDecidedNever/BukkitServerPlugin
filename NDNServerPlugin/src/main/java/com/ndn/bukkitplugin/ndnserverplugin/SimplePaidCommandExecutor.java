@@ -20,12 +20,7 @@ public class SimplePaidCommandExecutor implements CommandExecutor {
 
 	public SimplePaidCommandExecutor(NDNServerPlugin plugin) {
 		this.plugin = plugin;
-		for (World w : plugin.getServer().getWorlds()) {
-			plugin.getLogger().info(w.getName());
-			;
-		}
-		SPAWN_CORDS = new Location(plugin.getServer().getWorld("world"), TeleportLogic.SPAWN_X, TeleportLogic.SPAWN_Y,
-				TeleportLogic.SPAWN_Z);
+		SPAWN_CORDS = plugin.getServer().getWorld("world").getSpawnLocation();
 	}
 
 	@Override
