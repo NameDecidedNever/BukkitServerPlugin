@@ -2,7 +2,7 @@ package com.ndn.bukkitplugin.ndnserverplugin.datautils;
 
 import java.sql.*;
 
-import com.ndn.bukkitplugin.ndnserverplugin.VerificationCodeGenerator;
+import com.ndn.bukkitplugin.ndnutils.VerificationCodeGenerator;
 
 public class DataManager {
 
