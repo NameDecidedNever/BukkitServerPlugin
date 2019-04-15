@@ -35,10 +35,6 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		switch (cmd.getName()) {
-		case "city":
-
-		case "stock":
-
 		case "pay": 
 			if(args.length > 1) {
 				//create reason from args

@@ -30,10 +30,11 @@ public class SimplePaidCommandExecutor implements CommandExecutor {
 
 			if (command.getName().equals("clearweather")) {
 				if (DataManager.getInstance().getPlayerBalance(player.getName()) >= 10) {
-					DataManager.getInstance().setBalance(
-							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()),
-							DataManager.getInstance().getBalance(
-									DataManager.getInstance().getPlayerPrimaryAccount(player.getName())) - 10d);
+					// 0 is the server account. if this code errors set the '0' account to the
+					// server account
+					DataManager.getInstance().makePayExchange(
+							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), 0, 10,
+							"Clear Weather");
 					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "weather clear");
 					sender.sendMessage(ChatColor.GREEN + "The clouds part to reveal open skies.");
 					return true;
@@ -55,24 +56,21 @@ public class SimplePaidCommandExecutor implements CommandExecutor {
 					sender.sendMessage(ChatColor.BLUE + "You were teleported to spawn for free!");
 					return true;
 				} else if (DataManager.getInstance().getPlayerBalance(player.getName()) >= teleCost) {
-					DataManager.getInstance()
-							.setBalance(DataManager.getInstance().getPlayerPrimaryAccount(player.getName()),
-									DataManager.getInstance().getBalance(
-											DataManager.getInstance().getPlayerPrimaryAccount(player.getName()))
-											- teleCost);
+					DataManager.getInstance().makePayExchange(
+							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), 0, teleCost,
+							"Spawn Teleportation");
 					player.teleport(SPAWN_CORDS);
-					sender.sendMessage(ChatColor.BLUE + "You were teleported to spawn for $"
-							+ Math.round(teleCost * 100) / 100 + ".");
+					sender.sendMessage(ChatColor.BLUE + "You were teleported to spawn for $" + teleCost + ".");
 					return true;
 				} else {
-					sender.sendMessage(ChatColor.RED + "Insufficient funds to teleport to spawn. Cost: $" + teleCost);
+					sender.sendMessage(ChatColor.RED + "Insufficient funds to teleport to spawn. From your position it would cost $" + teleCost);
 					return true;
 				}
 
 			}
 
 		} else {
-			sender.sendMessage("You're the server!");
+			sender.sendMessage("That command is for clients only!");
 			return true;
 		}
 		return false;
