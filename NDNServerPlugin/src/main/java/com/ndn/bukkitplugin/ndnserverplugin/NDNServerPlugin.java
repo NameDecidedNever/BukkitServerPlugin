@@ -5,9 +5,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
@@ -15,6 +17,7 @@ import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 public class NDNServerPlugin extends JavaPlugin implements Listener {
 	MoneyCommandExecutor mce;
 	SimplePaidCommandExecutor spce;
+	SignShopListner ssl;
 	
 	@Override
 	public void onEnable() {
@@ -22,6 +25,10 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 		mce = new MoneyCommandExecutor(this);
 		spce = new SimplePaidCommandExecutor(this);
+		
+		ssl = new SignShopListner(this);
+		getServer().getPluginManager().registerEvents(ssl, this);
+		
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
 		getCommand("clearweather").setExecutor(spce);
