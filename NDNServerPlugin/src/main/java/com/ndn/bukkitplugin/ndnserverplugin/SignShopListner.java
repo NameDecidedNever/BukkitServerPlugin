@@ -2,6 +2,7 @@ package com.ndn.bukkitplugin.ndnserverplugin;
 
 import java.awt.Event;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -23,15 +24,21 @@ public class SignShopListner implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getClickedBlock().getState() instanceof Sign) {
-			String[] testMessage = new String[] {"You Right Clicked a Sign!", "Line 0: ", "Line 1: ", "Line 2: ", "Line 3: "};
+			String[] testMessage = new String[] { "You Right Clicked a Sign!", "Line 0: ", "Line 1: ", "Line 2: ",
+					"Line 3: " };
 			Sign sign = (Sign) event.getClickedBlock().getState();
-			if(SignShop.isSignShop(sign.getLines())) {
+			if (SignShop.isSignShop(sign.getLines())) {
 				Player player = event.getPlayer();
-				SignShop signShop = SignShop.makeSignShopFromSign(sign, event.getClickedBlock());
-				if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-					signShop.buy(player);
-				} else if(event.getAction() == Action.LEFT_CLICK_BLOCK) {
-					signShop.sell(player);
+				try {
+					SignShop signShop = SignShop.makeSignShopFromSign(sign,
+							SignShop.getChestFromSign(sign, plugin));
+					if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+						signShop.buy(player);
+					} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+						signShop.sell(player);
+					}
+				} catch (Exception e) {
+					player.sendMessage(ChatColor.RED + "An error Occured in the process of makeing the sign shop");
 				}
 			}
 		}

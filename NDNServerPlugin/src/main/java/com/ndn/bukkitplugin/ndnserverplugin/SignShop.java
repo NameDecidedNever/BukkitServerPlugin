@@ -3,6 +3,7 @@ package com.ndn.bukkitplugin.ndnserverplugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,13 +15,13 @@ import com.ndn.bukkitplugin.ndnutils.Utils;
 
 public class SignShop {
 	private int accountNum; // number of account
-	private Block linkedChest; // linked block to sign TODO: implement this
+	private Chest linkedChest; // linked block to sign TODO: implement this
 	private Material item; // the item sold
 	private int extangeAmount; // the amount extanged for the price (ex. 5 coal for $1)
 	private double buyCost; // the cost to buy, -1 means no buy option
 	private double sellCost; // the cost to sell, -1 means no sell option
 
-	public SignShop(int accountNum, Block chest, Material item, int amount, double buy, double sell) {
+	public SignShop(int accountNum, Chest chest, Material item, int amount, double buy, double sell) {
 		this.accountNum = accountNum;
 		this.linkedChest = chest;
 		this.item = item;
@@ -31,7 +32,7 @@ public class SignShop {
 
 	// returns a SignShop from a Sign method
 	// will throw exception if given sign doesent work
-	public static SignShop makeSignShopFromSign(Sign sign, Block chest) throws IllegalArgumentException {
+	public static SignShop makeSignShopFromSign(Sign sign, Chest chest) throws IllegalArgumentException {
 		if (!isSignShop(sign.getLines())) {
 			return null;
 		}
@@ -82,6 +83,13 @@ public class SignShop {
 	public double getSellPriceFromSignLine(String line) {
 		return 0;
 
+	}
+	
+	// method to get chest next to sign
+	public static Chest getChestFromSign(Sign sign, Plugin plugin) throws IllegalArgumentException{
+		org.bukkit.material.Sign matSign = (org.bukkit.material.Sign) sign.getBlock().getState();
+		BlockFace faceing = matSign.getFacing();
+		return null;
 	}
 
 	// method to interact with the sign
