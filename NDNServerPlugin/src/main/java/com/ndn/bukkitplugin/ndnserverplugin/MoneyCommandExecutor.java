@@ -27,7 +27,7 @@ public class MoneyCommandExecutor implements CommandExecutor {
 						DataManager.getInstance().getPlayerPrimaryAccount(reciver), amount, reason)) {
 					player.sendMessage(ChatColor.GREEN + "Transaction Complete!");
 					Bukkit.getPlayer(reciver)
-							.sendMessage(ChatColor.GREEN + "You've just recieved " + ChatColor.YELLOW + "$" + amount
+							.sendMessage(ChatColor.GREEN + "You've just recieved " + ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format( amount )
 									+ ChatColor.GREEN + " from " + ChatColor.BLUE + player.getName() + " '" + reason
 									+ "'");
 				} else {
@@ -52,8 +52,13 @@ public class MoneyCommandExecutor implements CommandExecutor {
 				sendSenderHelpText(sender);
 				return true;
 			} else if (args[0].equals("bal") || args[0].equals("balance")) {
+<<<<<<< HEAD
 				String balancePrompt = ChatColor.GREEN + "Account Balance (Account Num: " + dataManger.getPlayerPrimaryAccount(player.getName()) + ") : ";
 				String balance = ChatColor.YELLOW + "$" + dataManger.getPlayerBalance(player.getName());
+=======
+				String balancePrompt = ChatColor.GREEN + "Account Balance : ";
+				String balance = ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format(dataManger.getPlayerBalance(player.getName()));
+>>>>>>> 007e97d185c0a7a22fb0c3dc28a4cde40eb5236d
 				player.sendMessage(balancePrompt + balance);
 				return true;
 			} else if (args[0].equals("send") || args[0].equals("pay")) {

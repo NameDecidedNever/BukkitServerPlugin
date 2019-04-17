@@ -33,7 +33,7 @@ public class SimplePaidCommandExecutor implements CommandExecutor {
 					// 0 is the server account. if this code errors set the '0' account to the
 					// server account
 					DataManager.getInstance().makePayExchange(
-							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), 0, 10,
+							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getServerPrimaryAccount(), 10,
 							"Clear Weather");
 					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "weather clear");
 					sender.sendMessage(ChatColor.GREEN + "The clouds part to reveal open skies.");
@@ -57,7 +57,7 @@ public class SimplePaidCommandExecutor implements CommandExecutor {
 					return true;
 				} else if (DataManager.getInstance().getPlayerBalance(player.getName()) >= teleCost) {
 					DataManager.getInstance().makePayExchange(
-							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), 0, teleCost,
+							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getServerPrimaryAccount(), teleCost,
 							"Spawn Teleportation");
 					player.teleport(SPAWN_CORDS);
 					sender.sendMessage(ChatColor.BLUE + "You were teleported to spawn for $" + teleCost + ".");

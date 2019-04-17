@@ -14,6 +14,11 @@ public class DataManager {
 	static final String USER = "plugin";
 	static final String PASS = "imthemcplugin";
 
+	// Misc Config
+	static double PLAYER_DEFAULT_BALANCE = 200.0;
+	static double SERVER_DEFAULT_BALANCE = 500.0;
+	static double ALL_DEFAULT_CREDIT = 100.0;
+
 	// SQL Statements
 	static final String SQL_ADD_PLAYER = "INSERT INTO `players` (accountid, hashword, isverified, username, verificationcode) VALUES (?, ?, ?, ?, ?)";
 	static final String SQL_ADD_ACCOUNT = "INSERT INTO `accounts` (balance, credit, name) VALUES (?, ?, ?)";
@@ -60,6 +65,49 @@ public class DataManager {
 		return false;
 	}
 
+	private int createServerPrimaryAccount() {
+		try {
+
+			String accountName = "server";
+
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_ADD_ACCOUNT);
+			preparedStmt.setDouble(1, SERVER_DEFAULT_BALANCE);
+			preparedStmt.setInt(2, 0);
+			preparedStmt.setString(3, accountName);
+			preparedStmt.executeUpdate();
+			
+			PreparedStatement preparedStmt2 = conn.prepareStatement(SQL_SELECT_ACCOUNT_BY_NAME);
+			preparedStmt2.setString(1, accountName);
+			ResultSet account = preparedStmt2.executeQuery();
+
+			account.next();
+
+			return account.getInt("idaccounts");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return -1;
+	}
+
+	public int getServerPrimaryAccount() {
+		try {
+		PreparedStatement preparedStmt2 = conn.prepareStatement(SQL_SELECT_ACCOUNT_BY_NAME);
+		preparedStmt2.setString(1, "server");
+		ResultSet account = preparedStmt2.executeQuery();
+		if(account.next()) {
+			return account.getInt("idaccounts");
+		}else {
+			return createServerPrimaryAccount();
+		}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return -1;
+	}
+
 	public int getPlayerPrimaryAccount(String username) {
 
 		PreparedStatement preparedStmt;
@@ -67,9 +115,9 @@ public class DataManager {
 			preparedStmt = conn.prepareStatement(SQL_SELECT_PLAYER_BY_NAME);
 			preparedStmt.setString(1, username);
 			ResultSet rs = preparedStmt.executeQuery();
-			
+
 			rs.next();
-			
+
 			return rs.getInt("accountid");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -88,7 +136,7 @@ public class DataManager {
 			preparedStmt = conn.prepareStatement(SQL_GET_BALANCE);
 			preparedStmt.setInt(1, account);
 			ResultSet rs = preparedStmt.executeQuery();
-			
+
 			rs.next();
 
 			return rs.getDouble("balance");
@@ -109,15 +157,15 @@ public class DataManager {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getAccountName(int id) {
 		PreparedStatement preparedStmt;
 		try {
-		preparedStmt = conn.prepareStatement(SQL_GET_ACCOUNT_NAME_BY_ID);
-		preparedStmt.setInt(1, id);
-		ResultSet rs = preparedStmt.executeQuery();
-		rs.next();
-		return rs.getString("name");
+			preparedStmt = conn.prepareStatement(SQL_GET_ACCOUNT_NAME_BY_ID);
+			preparedStmt.setInt(1, id);
+			ResultSet rs = preparedStmt.executeQuery();
+			rs.next();
+			return rs.getString("name");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
