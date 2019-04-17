@@ -15,15 +15,17 @@ import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 public class NDNServerPlugin extends JavaPlugin implements Listener {
 	MoneyCommandExecutor mce;
 	SimplePaidCommandExecutor spce;
+	SignShopListner ssl;
 	
 	@Override
 	public void onEnable() {
-		// TODO Insert logic to be performed when the plugin is enabled
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
-		Bukkit.getServer().getPluginManager().registerEvents(new MobMoney(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new AchievementRewards(), this);
 		mce = new MoneyCommandExecutor(this);
 		spce = new SimplePaidCommandExecutor(this);
+		
+		ssl = new SignShopListner(this);
+		getServer().getPluginManager().registerEvents(ssl, this);
+		
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
 		getCommand("clearweather").setExecutor(spce);
