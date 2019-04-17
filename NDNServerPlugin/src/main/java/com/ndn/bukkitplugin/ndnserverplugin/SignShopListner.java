@@ -22,11 +22,17 @@ public class SignShopListner implements Listener {
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getState() instanceof Sign) {
+		if (event.getClickedBlock().getState() instanceof Sign) {
+			String[] testMessage = new String[] {"You Right Clicked a Sign!", "Line 0: ", "Line 1: ", "Line 2: ", "Line 3: "};
 			Sign sign = (Sign) event.getClickedBlock().getState();
 			if(SignShop.isSignShop(sign.getLines())) {
-				Player p = event.getPlayer();
-				String[] testMessage = new String[] {"You Right Clicked a Sign!", "Line 0: ", "Line 1: ", "Line 2: ", "Line 3: "};
+				Player player = event.getPlayer();
+				SignShop signShop = SignShop.makeSignShopFromSign(sign, event.getClickedBlock());
+				if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+					signShop.buy(player);
+				} else if(event.getAction() == Action.LEFT_CLICK_BLOCK) {
+					signShop.sell(player);
+				}
 			}
 		}
 	}

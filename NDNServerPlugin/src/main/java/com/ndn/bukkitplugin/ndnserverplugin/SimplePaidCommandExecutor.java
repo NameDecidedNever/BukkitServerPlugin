@@ -37,6 +37,7 @@ public class SimplePaidCommandExecutor implements CommandExecutor {
 							"Clear Weather");
 					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "weather clear");
 					sender.sendMessage(ChatColor.GREEN + "The clouds part to reveal open skies.");
+					plugin.getServer().broadcastMessage(player.getName() + " has paid for clear weather.");
 					return true;
 				} else {
 					sender.sendMessage(ChatColor.RED + "Insufficient funds.");
