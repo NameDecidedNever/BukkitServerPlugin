@@ -95,13 +95,13 @@ public class SignShop {
 	// method to interact with the sign
 	public boolean sell(Player player) {
 		DataManager dm = new DataManager();
-		if (dm.getBalance(accountNum) > sellCost )  {
+		if (dm.getBalance(accountNum) > sellCost && player.getInventory().containsAtLeast(new ItemStack(item),extangeAmount))  {
 			dm.makePayExchange(accountNum, dm.getPlayerPrimaryAccount(player.getName()), sellCost, "Sign Shop Sell");
 			player.getInventory().removeItem(new ItemStack(item, extangeAmount));
 			player.sendMessage(ChatColor.BLUE + "You sold " + ChatColor.YELLOW + extangeAmount + " " + item.toString() + ChatColor.BLUE + " for $" + ChatColor.GREEN + sellCost + ChatColor.BLUE + ".");
 			return true;
 		}
-		player.sendMessage(ChatColor.RED + "Insufficient Funds.");
+		player.sendMessage(ChatColor.RED + "Insufficient Items or Shop has ran out of money.");
 		return false;
 
 	}
