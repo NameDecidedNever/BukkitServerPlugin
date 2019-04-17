@@ -45,6 +45,20 @@ public class DataManager {
 		}
 		return instance;
 	}
+	
+	public boolean doesAccountExist(int id) {
+		PreparedStatement preparedStmt;
+		try {
+		preparedStmt = conn.prepareStatement(SQL_GET_ACCOUNT_NAME_BY_ID);
+		preparedStmt.setInt(1, id);
+		ResultSet rs = preparedStmt.executeQuery();
+		return rs.next();
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	public int getPlayerPrimaryAccount(String username) {
 
