@@ -23,4 +23,11 @@ public class SignShop {
 		return false;
 		
 	}
+	public static boolean isSignShop(String[] lines) {
+		if(lines.length != 4)
+			return false;
+		
+		
+		return false;
+	}
 }

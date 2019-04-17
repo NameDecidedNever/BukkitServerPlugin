@@ -1,6 +1,7 @@
 name: NDNServerPlugin
 main: com.ndn.bukkitplugin.ndnserverplugin.NDNServerPlugin
-version: 0.2
+version: 0.3
+api-version: 1.13
 author: NDN Dev Group
 commands:
    account:
