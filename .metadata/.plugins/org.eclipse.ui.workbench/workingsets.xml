@@ -9,4 +9,5 @@
 <item elementID="=NDNServerPlugin/src\/test\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
 </workingSet>
 <workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1553908508522_2" label="Window Working Set" name="Aggregate for window 1553908508522"/>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1555472445409_3" label="Window Working Set" name="Aggregate for window 1555472445409"/>
 </workingSetManager>
