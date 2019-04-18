@@ -24,5 +24,6 @@ CREATE TABLE `transactions` (
   `senderLabel` varchar(45) NOT NULL,
   `recieverLabel` varchar(45) NOT NULL,
   `message` varchar(45) NOT NULL,
+  `time` int(32) NOT NULL,
   PRIMARY KEY (`idtransactions`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

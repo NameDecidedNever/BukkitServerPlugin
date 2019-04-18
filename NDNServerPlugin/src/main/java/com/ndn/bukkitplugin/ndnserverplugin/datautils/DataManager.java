@@ -1,6 +1,8 @@
 package com.ndn.bukkitplugin.ndnserverplugin.datautils;
 
 import java.sql.*;
+import java.time.Instant;
+import java.util.Date;
 
 import com.ndn.bukkitplugin.ndnutils.VerificationCodeGenerator;
 
@@ -27,7 +29,7 @@ public class DataManager {
 	static final String SQL_GET_BALANCE = "SELECT balance from `accounts` WHERE idaccounts = ?";
 	static final String SQL_GET_ACCOUNT_NAME_BY_ID = "SELECT name from `accounts` WHERE idaccounts = ?";
 	static final String SQL_UPDATE_BALANCE = "UPDATE `accounts` SET balance = ? WHERE idaccounts = ?";
-	static final String SQL_INSERT_TRANSACTION = "INSERT INTO `transactions` (sender, reciever, amount, message, senderLabel, recieverLabel) VALUES (?, ?, ?, ?, ?, ?)";
+	static final String SQL_INSERT_TRANSACTION = "INSERT INTO `transactions` (sender, reciever, amount, message, senderLabel, recieverLabel, time) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	Connection conn = null;
 
@@ -174,6 +176,7 @@ public class DataManager {
 				preparedStmt.setString(4, message);
 				preparedStmt.setString(5, getAccountName(from));
 				preparedStmt.setString(6, getAccountName(to));
+				preparedStmt.setInt(7, (int) Instant.now().getEpochSecond());
 				preparedStmt.execute();
 				return true;
 			} catch (SQLException e) {
