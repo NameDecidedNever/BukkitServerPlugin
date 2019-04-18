@@ -35,4 +35,9 @@ CREATE TABLE `expenses` (
   `message` varchar(45) NOT NULL,
   PRIMARY KEY (`idexpenses`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `about` (
+  `currentPlayersOnline` int(11) NOT NULL,
+  `maxPlayersOnline` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
