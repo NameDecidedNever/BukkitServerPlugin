@@ -26,4 +26,13 @@ CREATE TABLE `transactions` (
   `message` varchar(45) NOT NULL,
   `time` int(32) NOT NULL,
   PRIMARY KEY (`idtransactions`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `expenses` (
+  `idexpenses` int(11) NOT NULL,
+  `sender` int(11) NOT NULL,
+  `reciever` int(11) NOT NULL,
+  `amount` double NOT NULL,
+  `message` varchar(45) NOT NULL,
+  PRIMARY KEY (`idexpenses`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
