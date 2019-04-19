@@ -21,7 +21,7 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 		// TODO Insert logic to be performed when the plugin is enabled
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 		Bukkit.getServer().getPluginManager().registerEvents(new MobMoney(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new AchievementRewards(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new AboutPageUpdater(), this);
 		mce = new MoneyCommandExecutor(this);
 		spce = new SimplePaidCommandExecutor(this);
 		getCommand("account").setExecutor(mce);
