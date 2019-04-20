@@ -75,13 +75,14 @@ public class SignShop {
 
 	// used by makeSignShopFromSign() method
 	public double getBuyPriceFromSignLine(String line) {
-		return 0;
+		line.indexOf(":");
+		return -1;
 
 	}
 
 	// used by makeSignShopFromSign() method
 	public double getSellPriceFromSignLine(String line) {
-		return 0;
+		return -1;
 
 	}
 
@@ -109,6 +110,10 @@ public class SignShop {
 
 	// method to interact with the sign
 	public boolean sell(Player player) {
+		if(sellCost < 0) {
+			player.sendMessage(ChatColor.RED + "You cant sell to this shop.");
+			return false;
+		}
 		DataManager dm = new DataManager();
 		if (dm.getBalance(accountNum) > sellCost
 				&& player.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
@@ -126,6 +131,10 @@ public class SignShop {
 
 	// method to interact with the sign
 	public boolean buy(Player player) {
+		if(buyCost < 0) {
+			player.sendMessage(ChatColor.RED + "You cant buy to this shop.");
+			return false;
+		}
 		DataManager dm = new DataManager();
 		if (dm.getBalance(dm.getPlayerPrimaryAccount(player.getName())) >= buyCost && linkedChest.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
 			dm.makePayExchange(dm.getPlayerPrimaryAccount(player.getName()), accountNum, buyCost, "Sign Shop Purchase");
