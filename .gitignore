@@ -23,6 +23,9 @@
 *.lock
 
 .metadata/*
+.metadata/.log
+.metadata
+.metadata/
 
 .metadata/.plugins/org.eclipse.core.resources/.history/*
 
