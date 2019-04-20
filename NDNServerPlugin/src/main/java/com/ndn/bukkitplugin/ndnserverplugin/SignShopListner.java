@@ -31,14 +31,15 @@ public class SignShopListner implements Listener {
 				Player player = event.getPlayer();
 				try {
 					SignShop signShop = SignShop.makeSignShopFromSign(sign,
-							SignShop.getChestFromSign(sign, plugin));
+							SignShop.getChestFromSign(sign));
 					if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 						signShop.buy(player);
 					} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
 						signShop.sell(player);
 					}
 				} catch (Exception e) {
-					player.sendMessage(ChatColor.RED + "An error Occured in the process of makeing the sign shop");
+					player.sendMessage(e.getMessage());
+					System.err.print(e.getMessage());
 				}
 			}
 		}

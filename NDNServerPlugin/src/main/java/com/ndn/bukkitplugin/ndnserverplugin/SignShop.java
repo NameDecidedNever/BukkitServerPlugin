@@ -7,7 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Chest;
+import org.bukkit.block.Chest;
 import org.bukkit.plugin.Plugin;
 
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
@@ -84,21 +84,39 @@ public class SignShop {
 		return 0;
 
 	}
-	
+
 	// method to get chest next to sign
-	public static Chest getChestFromSign(Sign sign, Plugin plugin) throws IllegalArgumentException{
-		org.bukkit.material.Sign matSign = (org.bukkit.material.Sign) sign.getBlock().getState();
-		BlockFace faceing = matSign.getFacing();
-		return null;
+	public static Chest getChestFromSign(Sign sign) throws IllegalArgumentException {
+		org.bukkit.material.Sign matSign = (org.bukkit.material.Sign) sign.getBlock().getState().getData();
+		if (!matSign.isWallSign()) {
+			if (sign.getBlock().getRelative(BlockFace.DOWN).getState() instanceof Chest) {
+				return (Chest) sign.getBlock().getRelative(BlockFace.DOWN).getState();
+			} else {
+				throw new IllegalArgumentException(ChatColor.RED + "Chest Not Found (Upright)");
+			}
+		} else {
+			BlockFace faceing = matSign.getFacing().getOppositeFace();
+
+			if (sign.getBlock().getRelative(faceing).getState() instanceof Chest) {
+				return (Chest) sign.getBlock().getRelative(faceing).getState();
+			} else {
+				throw new IllegalArgumentException(ChatColor.RED + "Chest Not Found (SideChest)");
+			}
+
+		}
+
 	}
 
 	// method to interact with the sign
 	public boolean sell(Player player) {
 		DataManager dm = new DataManager();
-		if (dm.getBalance(accountNum) > sellCost && player.getInventory().containsAtLeast(new ItemStack(item),extangeAmount))  {
+		if (dm.getBalance(accountNum) > sellCost
+				&& player.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
 			dm.makePayExchange(accountNum, dm.getPlayerPrimaryAccount(player.getName()), sellCost, "Sign Shop Sell");
 			player.getInventory().removeItem(new ItemStack(item, extangeAmount));
-			player.sendMessage(ChatColor.BLUE + "You sold " + ChatColor.YELLOW + extangeAmount + " " + item.toString() + ChatColor.BLUE + " for $" + ChatColor.GREEN + sellCost + ChatColor.BLUE + ".");
+			player.sendMessage(ChatColor.BLUE + "You sold " + ChatColor.YELLOW + extangeAmount + " " + item.toString()
+					+ ChatColor.BLUE + " for $" + ChatColor.GREEN + sellCost + ChatColor.BLUE + ".");
+			linkedChest.getInventory().addItem(new ItemStack(item, extangeAmount));
 			return true;
 		}
 		player.sendMessage(ChatColor.RED + "Insufficient Items or Shop has ran out of money.");
@@ -109,13 +127,15 @@ public class SignShop {
 	// method to interact with the sign
 	public boolean buy(Player player) {
 		DataManager dm = new DataManager();
-		if (dm.getBalance(dm.getPlayerPrimaryAccount(player.getName())) >= buyCost) {
+		if (dm.getBalance(dm.getPlayerPrimaryAccount(player.getName())) >= buyCost && linkedChest.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
 			dm.makePayExchange(dm.getPlayerPrimaryAccount(player.getName()), accountNum, buyCost, "Sign Shop Purchase");
 			player.getInventory().addItem(new ItemStack(item, extangeAmount));
-			player.sendMessage(ChatColor.BLUE + "You bought " + ChatColor.YELLOW + extangeAmount + " " + item.toString() + ChatColor.BLUE + " for $" + ChatColor.GREEN + buyCost + ChatColor.BLUE + ".");
+			player.sendMessage(ChatColor.BLUE + "You bought " + ChatColor.YELLOW + extangeAmount + " " + item.toString()
+					+ ChatColor.BLUE + " for $" + ChatColor.GREEN + buyCost + ChatColor.BLUE + ".");
+			linkedChest.getInventory().removeItem(new ItemStack(item, extangeAmount));
 			return true;
 		}
-		player.sendMessage(ChatColor.RED + "Insufficient Funds.");
+		player.sendMessage(ChatColor.RED + "Insufficient Funds or chest shop is out of stock.");
 		return false;
 
 	}
@@ -126,9 +146,12 @@ public class SignShop {
 			return false;
 		}
 		for (String l : lines) {
-			if (l == null) {
+			if (l == null || l.equals("")) {
 				return false;
 			}
+		}
+		if(!Utils.isNumeric(lines[2])) {
+			return false;
 		}
 
 		return true;
