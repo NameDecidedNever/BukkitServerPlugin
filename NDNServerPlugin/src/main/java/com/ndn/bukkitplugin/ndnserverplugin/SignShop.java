@@ -38,11 +38,11 @@ public class SignShop {
 		}
 		// getting account num
 		int accNum = -1;
-		if (Utils.isNumeric(sign.getLine(0))) {
+		if (Utils.isNumeric(sign.getLine(0).substring(2))) {
 			accNum = Integer.parseInt(sign.getLine(0));
 		} else {
-			accNum = DataManager.getInstance().getPlayerPrimaryAccount(sign.getLine(0));
-			if (accNum == 0) {
+			accNum = DataManager.getInstance().getPlayerPrimaryAccount(sign.getLine(0).substring(2));
+			if (accNum <= 0) {
 				throw new IllegalArgumentException("Account not found.");
 			}
 		}
@@ -56,36 +56,79 @@ public class SignShop {
 		}
 
 		// getting item
-		Material item;
-		if (Material.matchMaterial(sign.getLine(1)) != null) {
-			item = Material.matchMaterial(sign.getLine(1));
-		} else if (Material.getMaterial(sign.getLine(1)) != null) {
-			item = Material.getMaterial(sign.getLine(1));
-		} else {
-			throw new IllegalArgumentException("Item not found");
-		}
+		Material item = getMaterial(sign.getLine(1));
 
-		// TODO: find buy and sell cost
-
-		double buy = 1;
-		double sell = 1;
+		//using separate methods to get buy and sell price
+		double buy = getBuyPriceFromSignLine(sign.getLine(3));
+		double sell = getSellPriceFromSignLine(sign.getLine(3));
 
 		return new SignShop(accNum, chest, item, amount, buy, sell);
 	}
-
+	
 	// used by makeSignShopFromSign() method
-	public double getBuyPriceFromSignLine(String line) {
-		line.indexOf(":");
-		return -1;
-
+	public static Material getMaterial(String line) {
+		line = line.replace(' ', '_').toLowerCase();
+		if (Material.matchMaterial(line) != null) {
+			return Material.matchMaterial(line);
+		} else if(Material.matchMaterial(line+"s")  != null) {
+			//in case user enters "oak_plank instead of oak_planks"
+			return Material.matchMaterial(line+"s");
+		} else if (Material.getMaterial(line.toUpperCase()) != null) {
+			return Material.getMaterial(line.toUpperCase());
+		} else {
+			switch (line.toLowerCase()) {
+			case "iron":
+				return Material.IRON_INGOT;
+			case "gold":
+				return Material.GOLD_INGOT;
+			case "plank": case "planks":
+				return Material.OAK_PLANKS;
+			case "wood": case "log": case "logs":
+				return Material.OAK_LOG;
+			}
+			throw new IllegalArgumentException("Item not found");
+		}
 	}
 
 	// used by makeSignShopFromSign() method
-	public double getSellPriceFromSignLine(String line) {
-		return -1;
-
+	public static double getBuyPriceFromSignLine(String line) {
+		return getPrice(line, 'b');
 	}
 
+	// used by makeSignShopFromSign() method
+	public static double getSellPriceFromSignLine(String line) {
+		return getPrice(line, 's');
+	}
+	
+	public static double getPrice(String line, char c){
+		int middle = line.indexOf(":");
+		if(middle < 0) {
+			//if there is only one feild
+			if(line.toLowerCase().contains(""+c)) {
+				return getDoubleFromCombinedString(line);
+			}else {
+				return -1;
+			}
+		} else {
+			//decide what side of ':' to work on
+			String section = line.substring(0,middle).toLowerCase().contains(""+c) ? line.substring(0,middle) : line.substring(middle+1, line.length());
+			if(section.contains(""+c)) {
+				return -1;
+			}
+			return getDoubleFromCombinedString(section);
+		}
+	}
+	
+	//used by buy price methods
+	private static double getDoubleFromCombinedString(String s) {
+		StringBuilder sb = new StringBuilder();
+		for(char c : s.toString().toCharArray()) {
+			if("-1234567890.".contains(""+c)) {
+				sb.append(c);
+			}
+		}
+		return Double.parseDouble(sb.toString());
+	}
 	// method to get chest next to sign
 	public static Chest getChestFromSign(Sign sign) throws IllegalArgumentException {
 		org.bukkit.material.Sign matSign = (org.bukkit.material.Sign) sign.getBlock().getState().getData();
@@ -114,6 +157,10 @@ public class SignShop {
 			player.sendMessage(ChatColor.RED + "You cant sell to this shop.");
 			return false;
 		}
+		if(DataManager.getInstance().getPlayerPrimaryAccount(player.getName()) == accountNum) {
+			player.sendMessage(ChatColor.RED + "This is your shop.");
+			return false;
+		}
 		DataManager dm = new DataManager();
 		if (dm.getBalance(accountNum) > sellCost
 				&& player.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
@@ -132,7 +179,11 @@ public class SignShop {
 	// method to interact with the sign
 	public boolean buy(Player player) {
 		if(buyCost < 0) {
-			player.sendMessage(ChatColor.RED + "You cant buy to this shop.");
+			player.sendMessage(ChatColor.RED + "You cant buy at this shop.");
+			return false;
+		}
+		if(DataManager.getInstance().getPlayerPrimaryAccount(player.getName()) == accountNum) {
+			player.sendMessage(ChatColor.RED + "This is your shop.");
 			return false;
 		}
 		DataManager dm = new DataManager();

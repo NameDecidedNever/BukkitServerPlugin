@@ -13,6 +13,8 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 
+import com.ndn.bukkitplugin.ndnutils.Utils;
+
 public class SignShopListner implements Listener {
 
 	Plugin plugin;
@@ -24,8 +26,8 @@ public class SignShopListner implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getClickedBlock().getState() instanceof Sign) {
-			String[] testMessage = new String[] { "You Right Clicked a Sign!", "Line 0: ", "Line 1: ", "Line 2: ",
-					"Line 3: " };
+			//String[] testMessage = new String[] { "You Right Clicked a Sign!", "Line 0: ", "Line 1: ", "Line 2: ",
+			//		"Line 3: " };
 			Sign sign = (Sign) event.getClickedBlock().getState();
 			if (SignShop.isSignShop(sign.getLines())) {
 				Player player = event.getPlayer();
@@ -47,7 +49,14 @@ public class SignShopListner implements Listener {
 
 	@EventHandler
 	public void onSignChange(SignChangeEvent event) {
-
+		if(SignShop.isSignShop(event.getLines())) {
+			if(!Utils.isNumeric(event.getLine(0)) && !event.getPlayer().getName().equals(event.getLine(0))) {
+				event.getPlayer().sendMessage(ChatColor.RED + "You can only use your name or an account number.");;
+				event.setCancelled(true);
+			} else {
+				event.setLine(0, "§2" + event.getLine(0));
+			}
+		}
 	}
 
 //	@EventHandler
