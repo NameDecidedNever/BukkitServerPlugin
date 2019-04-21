@@ -16,6 +16,7 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	MoneyCommandExecutor mce;
 	SimplePaidCommandExecutor spce;
 	SignShopListner ssl;
+	ChatCencorListner ccl;
 	
 	@Override
 	public void onEnable() {
@@ -24,7 +25,9 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 		spce = new SimplePaidCommandExecutor(this);
 		
 		ssl = new SignShopListner(this);
+		ccl = new ChatCencorListner(this);
 		getServer().getPluginManager().registerEvents(ssl, this);
+		getServer().getPluginManager().registerEvents(ccl, this);
 		
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
