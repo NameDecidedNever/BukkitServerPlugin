@@ -15,6 +15,7 @@ import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 public class NDNServerPlugin extends JavaPlugin implements Listener {
 	MoneyCommandExecutor mce;
 	SimplePaidCommandExecutor spce;
+	TownCommandExecutor tce;
 	
 	@Override
 	public void onEnable() {
@@ -24,9 +25,11 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 		Bukkit.getServer().getPluginManager().registerEvents(new AboutPageUpdater(), this);
 		mce = new MoneyCommandExecutor(this);
 		spce = new SimplePaidCommandExecutor(this);
+		tce = new TownCommandExecutor(this);
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
 		getCommand("clearweather").setExecutor(spce);
+		getCommand("found").setExecutor(tce);
 	}
 
 	@Override

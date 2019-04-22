@@ -4,6 +4,8 @@ import java.sql.*;
 import java.time.Instant;
 import java.util.Date;
 
+import org.bukkit.entity.Player;
+
 import com.ndn.bukkitplugin.ndnutils.VerificationCodeGenerator;
 
 public class DataManager {
@@ -20,6 +22,7 @@ public class DataManager {
 	static double PLAYER_DEFAULT_BALANCE = 200.0;
 	static double SERVER_DEFAULT_BALANCE = 500.0;
 	static double ALL_DEFAULT_CREDIT = 100.0;
+	static int STARTING_TOWN_RADIUS = 50;
 
 	// SQL Statements
 	static final String SQL_ADD_PLAYER = "INSERT INTO `players` (accountid, hashword, isverified, username, verificationcode) VALUES (?, ?, ?, ?, ?)";
@@ -34,6 +37,7 @@ public class DataManager {
 	static final String SQL_UPDATE_ABOUT_PLAYERS = "UPDATE `about` SET currentPlayersOnline = ?";
 	static final String SQL_UPDATE_ABOUT_PEAK_PLAYERS = "UPDATE `about` SET maxPlayersOnline = ?";
 	static final String SQL_SELECT_ABOUT = "SELECT * FROM `about`";
+	static final String SQL_ADD_TOWN = "INSERT INTO `towns` (name, dateFounded, ownerName, ownerAccountId, centerX, centerZ, radius, mobKillTaxPerc, chestShopTaxPerc, warpTaxPerc, auctionTaxPerc, shippingTaxPerc, dailyMemberTaxAmount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	Connection conn = null;
 
@@ -78,6 +82,29 @@ public class DataManager {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	public void addTown(String name, Player owner, int centerX, int centerZ) {
+		try {
+			PreparedStatement preparedStmt;
+			preparedStmt = conn.prepareStatement(SQL_ADD_TOWN);
+			preparedStmt.setString(1, name);
+			preparedStmt.setInt(2, (int) Instant.now().getEpochSecond());
+			preparedStmt.setString(3, owner.getName());
+			preparedStmt.setInt(4, getPlayerPrimaryAccount(owner.getName()));
+			preparedStmt.setInt(5, centerX);
+			preparedStmt.setInt(6, centerZ);
+			preparedStmt.setInt(7, STARTING_TOWN_RADIUS);
+			preparedStmt.setDouble(8, 0);
+			preparedStmt.setDouble(9, 0.1);
+			preparedStmt.setDouble(10, 0.1);
+			preparedStmt.setDouble(11, 0.1);
+			preparedStmt.setDouble(12, 0.1);
+			preparedStmt.setDouble(13, 0.1);
+			preparedStmt.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void updateMaxPlayersNumber(int newNum) {

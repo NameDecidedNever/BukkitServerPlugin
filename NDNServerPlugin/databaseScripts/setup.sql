@@ -40,13 +40,13 @@ CREATE TABLE `about` (
   `maxPlayersOnline` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 CREATE TABLE `towns` (
-  `idtowns` int(11) NOT NULL,
+  `idtowns` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `dateFounded` int(11) NOT NULL,
   `ownerName` varchar(45) NOT NULL,
   `ownerAccountId` varchar(45) NOT NULL,
   `centerX` int(11) NOT NULL,
-  `centerY` int(11) NOT NULL,
+  `centerZ` int(11) NOT NULL,
   `radius` int(11) NOT NULL,
   `mobKillTaxPerc` double NOT NULL,
   `chestShopTaxPerc` double NOT NULL,
@@ -56,6 +56,7 @@ CREATE TABLE `towns` (
   `dailyMemberTaxAmount` double NOT NULL,
   PRIMARY KEY (`idtowns`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 
 
