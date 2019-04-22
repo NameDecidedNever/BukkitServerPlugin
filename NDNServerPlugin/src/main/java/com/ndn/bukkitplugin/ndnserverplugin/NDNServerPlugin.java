@@ -2,12 +2,16 @@ package com.ndn.bukkitplugin.ndnserverplugin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
@@ -15,18 +19,25 @@ import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 public class NDNServerPlugin extends JavaPlugin implements Listener {
 	MoneyCommandExecutor mce;
 	SimplePaidCommandExecutor spce;
+	SignShopListner ssl;
+	ChatCencorListner ccl;
 	
 	@Override
 	public void onEnable() {
-		// TODO Insert logic to be performed when the plugin is enabled
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
-		Bukkit.getServer().getPluginManager().registerEvents(new MobMoney(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new AchievementRewards(), this);
 		mce = new MoneyCommandExecutor(this);
 		spce = new SimplePaidCommandExecutor(this);
+		
+		ssl = new SignShopListner(this);
+		ccl = new ChatCencorListner(this);
+		getServer().getPluginManager().registerEvents(ssl, this);
+		getServer().getPluginManager().registerEvents(ccl, this);
+		
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
 		getCommand("clearweather").setExecutor(spce);
+		
+		recipieFurnace();
 	}
 
 	@Override
@@ -66,5 +77,10 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 					+ DataManager.getInstance().getPlayerVerificationCode(evt.getPlayer().getName());
 			evt.getPlayer().sendMessage(prompt + code);
 		}
+	}
+	
+	private void recipieFurnace() {
+		getServer().addRecipe(new FurnaceRecipe(new ItemStack(Material.LEATHER), Material.ROTTEN_FLESH));
+
 	}
 }

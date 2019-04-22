@@ -52,7 +52,7 @@ public class MoneyCommandExecutor implements CommandExecutor {
 				sendSenderHelpText(sender);
 				return true;
 			} else if (args[0].equals("bal") || args[0].equals("balance")) {
-				String balancePrompt = ChatColor.GREEN + "Account Balance : ";
+				String balancePrompt = ChatColor.GREEN + "Account Balance (Account Num: " + dataManger.getPlayerPrimaryAccount(player.getName()) + ") : ";
 				String balance = ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format(dataManger.getPlayerBalance(player.getName()));
 				player.sendMessage(balancePrompt + balance);
 				return true;
