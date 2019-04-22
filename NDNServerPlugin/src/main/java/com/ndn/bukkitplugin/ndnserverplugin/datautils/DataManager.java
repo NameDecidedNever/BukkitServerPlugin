@@ -4,6 +4,8 @@ import java.sql.*;
 import java.time.Instant;
 import java.util.Date;
 
+import org.bukkit.entity.Player;
+
 import com.ndn.bukkitplugin.ndnutils.VerificationCodeGenerator;
 
 public class DataManager {
@@ -20,6 +22,7 @@ public class DataManager {
 	static double PLAYER_DEFAULT_BALANCE = 200.0;
 	static double SERVER_DEFAULT_BALANCE = 500.0;
 	static double ALL_DEFAULT_CREDIT = 100.0;
+	static int STARTING_TOWN_RADIUS = 50;
 
 	// SQL Statements
 	static final String SQL_ADD_PLAYER = "INSERT INTO `players` (accountid, hashword, isverified, username, verificationcode) VALUES (?, ?, ?, ?, ?)";
@@ -30,7 +33,12 @@ public class DataManager {
 	static final String SQL_GET_ACCOUNT_NAME_BY_ID = "SELECT name from `accounts` WHERE idaccounts = ?";
 	static final String SQL_UPDATE_BALANCE = "UPDATE `accounts` SET balance = ? WHERE idaccounts = ?";
 	static final String SQL_INSERT_TRANSACTION = "INSERT INTO `transactions` (sender, reciever, amount, message, senderLabel, recieverLabel, time) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
+	static final String SQL_INSERT_ABOUT = "INSERT INTO `about` (currentPlayersOnline, maxPlayersOnline) VALUES (0, 0)";
+	static final String SQL_UPDATE_ABOUT_PLAYERS = "UPDATE `about` SET currentPlayersOnline = ?";
+	static final String SQL_UPDATE_ABOUT_PEAK_PLAYERS = "UPDATE `about` SET maxPlayersOnline = ?";
+	static final String SQL_SELECT_ABOUT = "SELECT * FROM `about`";
+	static final String SQL_ADD_TOWN = "INSERT INTO `towns` (name, dateFounded, ownerName, ownerAccountId, centerX, centerZ, radius, mobKillTaxPerc, chestShopTaxPerc, warpTaxPerc, auctionTaxPerc, shippingTaxPerc, dailyMemberTaxAmount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	
 	Connection conn = null;
 
 	private static DataManager instance = null;
@@ -52,6 +60,93 @@ public class DataManager {
 		}
 		return instance;
 	}
+	
+	private int getLastPlayerPeak() {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_ABOUT);
+			ResultSet rs = preparedStmt.executeQuery();
+			rs.next();
+			return rs.getInt("maxPlayersOnline");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	private boolean checkIfTableHasAnyRows(String tableName) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM `" + tableName + "`");
+			ResultSet rs = preparedStmt.executeQuery();
+			return rs.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public void addTown(String name, Player owner, int centerX, int centerZ) {
+		try {
+			PreparedStatement preparedStmt;
+			preparedStmt = conn.prepareStatement(SQL_ADD_TOWN);
+			preparedStmt.setString(1, name);
+			preparedStmt.setInt(2, (int) Instant.now().getEpochSecond());
+			preparedStmt.setString(3, owner.getName());
+			preparedStmt.setInt(4, getPlayerPrimaryAccount(owner.getName()));
+			preparedStmt.setInt(5, centerX);
+			preparedStmt.setInt(6, centerZ);
+			preparedStmt.setInt(7, STARTING_TOWN_RADIUS);
+			preparedStmt.setDouble(8, 0);
+			preparedStmt.setDouble(9, 0.1);
+			preparedStmt.setDouble(10, 0.1);
+			preparedStmt.setDouble(11, 0.1);
+			preparedStmt.setDouble(12, 0.1);
+			preparedStmt.setDouble(13, 0.1);
+			preparedStmt.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateMaxPlayersNumber(int newNum) {
+		if (!checkIfTableHasAnyRows("about")) {
+			createAbout();
+		}
+		try {
+			PreparedStatement preparedStmt;
+			preparedStmt = conn.prepareStatement(SQL_UPDATE_ABOUT_PEAK_PLAYERS);
+			preparedStmt.setInt(1, newNum);
+			preparedStmt.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateCurrentPlayersNumber(int newNum) {
+		if (!checkIfTableHasAnyRows("about")) {
+			createAbout();
+		}
+		try {
+			PreparedStatement preparedStmt;
+			preparedStmt = conn.prepareStatement(SQL_UPDATE_ABOUT_PLAYERS);
+			preparedStmt.setInt(1, newNum);
+			preparedStmt.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(getLastPlayerPeak() < newNum) {
+			updateMaxPlayersNumber(newNum);
+		}
+	}
+
+	private void createAbout() {
+		try {
+			PreparedStatement preparedStmt;
+			preparedStmt = conn.prepareStatement(SQL_INSERT_ABOUT);
+			preparedStmt.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private int createServerPrimaryAccount() {
 		try {
@@ -63,7 +158,7 @@ public class DataManager {
 			preparedStmt.setInt(2, 0);
 			preparedStmt.setString(3, accountName);
 			preparedStmt.executeUpdate();
-			
+
 			PreparedStatement preparedStmt2 = conn.prepareStatement(SQL_SELECT_ACCOUNT_BY_NAME);
 			preparedStmt2.setString(1, accountName);
 			ResultSet account = preparedStmt2.executeQuery();
@@ -81,14 +176,14 @@ public class DataManager {
 
 	public int getServerPrimaryAccount() {
 		try {
-		PreparedStatement preparedStmt2 = conn.prepareStatement(SQL_SELECT_ACCOUNT_BY_NAME);
-		preparedStmt2.setString(1, "server");
-		ResultSet account = preparedStmt2.executeQuery();
-		if(account.next()) {
-			return account.getInt("idaccounts");
-		}else {
-			return createServerPrimaryAccount();
-		}
+			PreparedStatement preparedStmt2 = conn.prepareStatement(SQL_SELECT_ACCOUNT_BY_NAME);
+			preparedStmt2.setString(1, "server");
+			ResultSet account = preparedStmt2.executeQuery();
+			if (account.next()) {
+				return account.getInt("idaccounts");
+			} else {
+				return createServerPrimaryAccount();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 

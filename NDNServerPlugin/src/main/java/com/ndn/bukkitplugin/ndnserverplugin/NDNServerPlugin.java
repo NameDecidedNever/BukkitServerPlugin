@@ -21,13 +21,16 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	SimplePaidCommandExecutor spce;
 	SignShopListner ssl;
 	ChatCencorListner ccl;
+	TownCommandExecutor tce;
 	
 	@Override
 	public void onEnable() {
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
+
 		mce = new MoneyCommandExecutor(this);
 		spce = new SimplePaidCommandExecutor(this);
-		
+		tce = new TownCommandExecutor(this);
+
 		ssl = new SignShopListner(this);
 		ccl = new ChatCencorListner(this);
 		getServer().getPluginManager().registerEvents(ssl, this);
@@ -36,9 +39,13 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
 		getCommand("clearweather").setExecutor(spce);
-		
+		getCommand("found").setExecutor(tce);
+
 		recipieFurnace();
-	}
+
+		Bukkit.getServer().getPluginManager().registerEvents(new MobMoney(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new AboutPageUpdater(), this);
+			}
 
 	@Override
 	public void onDisable() {
