@@ -2,12 +2,16 @@ package com.ndn.bukkitplugin.ndnserverplugin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
@@ -32,6 +36,8 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
 		getCommand("clearweather").setExecutor(spce);
+		
+		recipieFurnace();
 	}
 
 	@Override
@@ -71,5 +77,10 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 					+ DataManager.getInstance().getPlayerVerificationCode(evt.getPlayer().getName());
 			evt.getPlayer().sendMessage(prompt + code);
 		}
+	}
+	
+	private void recipieFurnace() {
+		getServer().addRecipe(new FurnaceRecipe(new ItemStack(Material.LEATHER), Material.ROTTEN_FLESH));
+
 	}
 }
