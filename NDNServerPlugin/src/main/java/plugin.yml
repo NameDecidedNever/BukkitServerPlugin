@@ -19,3 +19,6 @@ commands:
    found:
       description: Found your very own town from the position you are currently standing!
       usage: /<command> [townName]
+   firework:
+      description: Create a random firework! (OPs only)
+      usage: /<command>
