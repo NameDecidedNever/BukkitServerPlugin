@@ -70,6 +70,13 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 			}
 			sender.sendMessage("Invalad Arguments in the pay command, must be /pay [player] [amount]");
 			return true;
+		case "firework":
+			if(sender.isOp() && sender instanceof Player) {
+				FireworkManager.makeFireworkAtPlayer(this, (Player) sender);
+			}else {
+				sender.sendMessage("You must be an OP");
+			}
+			return true;
 		}
 		return false;
 	}

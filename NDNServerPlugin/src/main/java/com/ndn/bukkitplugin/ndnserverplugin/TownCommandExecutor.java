@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.plugin.Plugin;
 
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 
@@ -29,14 +30,10 @@ public class TownCommandExecutor implements CommandExecutor{
 				DataManager.getInstance().addTown(args[0], (Player) sender, player.getLocation().getBlockX(), player.getLocation().getBlockZ());
 				DataManager.getInstance().makePayExchange(DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getServerPrimaryAccount(), TOWN_FOUND_FEE, "Cost For Founding " + args[0]);
 				sender.sendMessage("Congratulations on founding " + args[0]);
-//				Firework fw = (Firework) player.getWorld().spawn(player.getEyeLocation(), Firework.class);
-//			    FireworkMeta fwm = fw.getFireworkMeta();
-//			    fwm.setPower(2);
-//			    
-//		        fwm.addEffect(FireworkEffect.builder().withColor(Color.BLUE).flicker(true).build());
-//		        fw.setFireworkMeta(fwm);
-//		        //fw.detonate();
-//			    fw.setVelocity(player.getLocation().getDirection().multiply(1));
+				for (int i = 0; i < 3; i++) {
+					FireworkManager.makeFireworkAtPlayer(plugin, player);
+				}
+				
 			}
 			return true;
 		}
