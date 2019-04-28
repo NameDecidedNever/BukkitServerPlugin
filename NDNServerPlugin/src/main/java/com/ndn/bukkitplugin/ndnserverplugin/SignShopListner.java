@@ -59,14 +59,5 @@ public class SignShopListner implements Listener {
 		}
 	}
 
-//	@EventHandler
-//	public void ballFiring(PlayerInteractEvent event) {
-//		Player p = event.getPlayer();
-//		p.sendMessage("You Right Clicked: " + event.getClickedBlock().getType());
-//		if (event.getClickedBlock().getType().equals( Material.SIGN)) {
-//			
-//			p.sendMessage("You Clicked a Sign!");
-//		}
-//	}
 
 }

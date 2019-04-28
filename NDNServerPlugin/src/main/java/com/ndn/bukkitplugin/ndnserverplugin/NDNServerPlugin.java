@@ -22,7 +22,9 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	SignShopListner ssl;
 	ChatCencorListner ccl;
 	TownCommandExecutor tce;
-	
+	//fbi its not what it looks like
+	ChunckProtection cp;
+
 	@Override
 	public void onEnable() {
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
@@ -30,12 +32,14 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 		mce = new MoneyCommandExecutor(this);
 		spce = new SimplePaidCommandExecutor(this);
 		tce = new TownCommandExecutor(this);
+		cp = new ChunckProtection(this);
 
 		ssl = new SignShopListner(this);
 		ccl = new ChatCencorListner(this);
 		getServer().getPluginManager().registerEvents(ssl, this);
 		getServer().getPluginManager().registerEvents(ccl, this);
-		
+		getServer().getPluginManager().registerEvents(cp, this);
+
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
 		getCommand("clearweather").setExecutor(spce);
@@ -45,7 +49,7 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 
 		Bukkit.getServer().getPluginManager().registerEvents(new MobMoney(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new AboutPageUpdater(), this);
-			}
+	}
 
 	@Override
 	public void onDisable() {
@@ -55,9 +59,9 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		switch (cmd.getName()) {
-		case "pay": 
-			if(args.length > 1) {
-				//create reason from args
+		case "pay":
+			if (args.length > 1) {
+				// create reason from args
 				String reason = "Player to Player Transaction";
 				if (args.length >= 3) {
 					reason = "";
@@ -65,15 +69,15 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 						reason += args[i] + " ";
 					}
 				}
-				
+
 				return mce.sendMoney(sender, args[0], Double.parseDouble(args[1]), reason.trim());
 			}
 			sender.sendMessage("Invalad Arguments in the pay command, must be /pay [player] [amount]");
 			return true;
 		case "firework":
-			if(sender.isOp() && sender instanceof Player) {
+			if (sender.isOp() && sender instanceof Player) {
 				FireworkManager.makeFireworkAtPlayer(this, (Player) sender);
-			}else {
+			} else {
 				sender.sendMessage("You must be an OP");
 			}
 			return true;
@@ -92,7 +96,7 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 			evt.getPlayer().sendMessage(prompt + code);
 		}
 	}
-	
+
 	private void recipieFurnace() {
 		getServer().addRecipe(new FurnaceRecipe(new ItemStack(Material.LEATHER), Material.ROTTEN_FLESH));
 
