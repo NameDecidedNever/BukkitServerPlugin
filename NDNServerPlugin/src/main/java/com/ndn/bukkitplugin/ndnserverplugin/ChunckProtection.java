@@ -1,5 +1,6 @@
 package com.ndn.bukkitplugin.ndnserverplugin;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
@@ -19,6 +20,8 @@ import org.bukkit.plugin.Plugin;
 public class ChunckProtection implements Listener {
 
 	Plugin plugin;
+	
+	static HashMap<ChunckCord, ChunckPremission> chunkPremmisions;
 
 	public ChunckProtection(Plugin plugin) {
 		this.plugin = plugin;
@@ -66,19 +69,24 @@ public class ChunckProtection implements Listener {
 	// spific isAllowed to check if player can use a block in a area
 	// TODO: add block differation
 	public boolean isAllowed(PlayerInteractEvent e) {
+		
 		if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			switch (e.getClickedBlock().getType()) {
-			case CHEST:
-				return isAllowed(e.getClickedBlock().getLocation(), e.getPlayer());
-			case FURNACE:
-				return isAllowed(e.getClickedBlock().getLocation(), e.getPlayer());
-			case ENCHANTING_TABLE:
-				return isAllowed(e.getClickedBlock().getLocation(), e.getPlayer());
-			default:
-				return true;
-			}
 			
 		}
 		return true;
 	}
+	
+	/**
+	 * static methods to update the chunkPremmisions hashmap
+	 */
+	
+	//TODO: methods to update database
+	public static void updateDatabase() {
+		
+	}
+	
+	public static void retreiveFromDatabase() {
+		
+	}
+	
 }
