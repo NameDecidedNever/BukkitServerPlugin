@@ -21,10 +21,11 @@ public class ChunckProtection implements Listener {
 
 	Plugin plugin;
 	
-	static HashMap<ChunckCord, ChunckPremission> chunkPremmisions;
+	public static HashMap<ChunckCord, ChunckPremission> chunkPremmisions;
 
 	public ChunckProtection(Plugin plugin) {
 		this.plugin = plugin;
+		retreiveFromDatabase();
 	}
 
 	/*
@@ -49,10 +50,10 @@ public class ChunckProtection implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
-		if (!isAllowed(e) && !e.getPlayer().isOp()) {
-			e.setCancelled(true);
-			e.getPlayer().sendMessage(ChatColor.RED + "You can't use blocks here!");
-		}
+//		if (!isAllowed(e) && !e.getPlayer().isOp()) {
+//			e.setCancelled(true);
+//			e.getPlayer().sendMessage(ChatColor.RED + "You can't use blocks here!");
+//		}
 	}
 
 	/**
@@ -61,8 +62,15 @@ public class ChunckProtection implements Listener {
 	 */
 
 	public boolean isAllowed(Location loc, Player p) {
-		Random rand = new Random();
-		return rand.nextBoolean();
+		plugin.getServer().getConsoleSender().sendMessage("" + chunkPremmisions.containsKey(ChunckCord.getCordFromLoc(loc)));
+		if(chunkPremmisions.containsKey(ChunckCord.getCordFromLoc(loc))) {
+			if(chunkPremmisions.get(ChunckCord.getCordFromLoc(loc)).isAllowedMine(p.getName())){
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return true;
 
 	}
 
@@ -71,7 +79,13 @@ public class ChunckProtection implements Listener {
 	public boolean isAllowed(PlayerInteractEvent e) {
 		
 		if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			
+			if(chunkPremmisions.containsKey(ChunckCord.getCordFromLoc(e.getPlayer().getLocation()))) {
+				if(chunkPremmisions.get(ChunckCord.getCordFromLoc(e.getPlayer().getLocation())).isAllowedRightClick(e.getPlayer().getName(), e.getClickedBlock().getType())){
+					return true;
+				} else {
+					return false;
+				}
+			}
 		}
 		return true;
 	}
@@ -86,7 +100,25 @@ public class ChunckProtection implements Listener {
 	}
 	
 	public static void retreiveFromDatabase() {
-		
+		chunkPremmisions = new HashMap<ChunckCord, ChunckPremission>();
+	}
+	
+	public static ChunckPremission getChunkPremission(int x, int y) {
+		if(chunkPremmisions.containsKey(ChunckCord.getCordFromLoc(x, y))) {
+			return chunkPremmisions.get(ChunckCord.getCordFromLoc(x, y));
+		}
+		return null;
+	}
+	
+	public static void setChunkPremission(ChunckPremission cp, int x, int y) {
+		setChunkPremission(cp, new ChunckCord(x, y));
+	}
+	
+	public static void setChunkPremission(ChunckPremission cp, ChunckCord cc) {
+		if(chunkPremmisions == null) {
+			retreiveFromDatabase();
+		}
+		chunkPremmisions.put(cc, cp);
 	}
 	
 }

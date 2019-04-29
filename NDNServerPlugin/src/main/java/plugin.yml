@@ -22,3 +22,9 @@ commands:
    firework:
       description: Create a random firework! (OPs only)
       usage: /<command>
+   claim:
+      description: claim an chunck (OPs only)
+      usage: /<command>
+   viewperms:
+      description: (OPs only)
+      usage: /<command>

@@ -20,12 +20,12 @@ public class ChunckCord {
 		return y;
 	}
 
-	public ChunckCord getCordFromLoc(Location loc) {
+	public static ChunckCord getCordFromLoc(Location loc) {
 		return getCordFromLoc(loc.getBlockX(), loc.getBlockZ());
 		
 	}
 	
-	public ChunckCord getCordFromLoc(int x, int y) {
+	public static ChunckCord getCordFromLoc(int x, int y) {
 		return new ChunckCord(x%16, y%16);
 		
 	}
@@ -33,6 +33,11 @@ public class ChunckCord {
 	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof ChunckCord && this.getX() == ((ChunckCord)obj).getX() && this.getY() == ((ChunckCord)obj).getY();
+	}
+	
+	@Override
+	public String toString() {
+		return "" + x + " " + y;
 	}
 	
 	

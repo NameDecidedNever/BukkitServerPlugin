@@ -39,6 +39,8 @@ public class ChatCencorListner implements Listener{
 				s = ChatColor.LIGHT_PURPLE + s + ChatColor.RESET;
 			if(s.equalsIgnoreCase("zzz"))
 				s = "" + ChatColor.MAGIC;
+			if(s.equalsIgnoreCase("thanos"))
+				s = "" + ChatColor.DARK_PURPLE + ChatColor.BOLD +  s + ChatColor.RESET ;
 			message.append(s + " ");
 		}
 		event.setMessage(message.toString());

@@ -22,28 +22,32 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	SignShopListner ssl;
 	ChatCencorListner ccl;
 	TownCommandExecutor tce;
-	//fbi its not what it looks like
+	ChunckClaimCommandExecutor ccce;
+	// fbi its not what it looks like
 	ChunckProtection cp;
 
 	@Override
 	public void onEnable() {
-		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 
 		mce = new MoneyCommandExecutor(this);
 		spce = new SimplePaidCommandExecutor(this);
 		tce = new TownCommandExecutor(this);
 		cp = new ChunckProtection(this);
+		ccce = new ChunckClaimCommandExecutor(this);
 
 		ssl = new SignShopListner(this);
 		ccl = new ChatCencorListner(this);
-		getServer().getPluginManager().registerEvents(ssl, this);
+		//getServer().getPluginManager().registerEvents(ssl, this);
 		getServer().getPluginManager().registerEvents(ccl, this);
 		getServer().getPluginManager().registerEvents(cp, this);
+		getServer().getPluginManager().registerEvents(this, this);
 
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
 		getCommand("clearweather").setExecutor(spce);
 		getCommand("found").setExecutor(tce);
+		getCommand("claim").setExecutor(ccce);
+		getCommand("viewperms").setExecutor(ccce);
 
 		recipieFurnace();
 
@@ -53,7 +57,7 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 
 	@Override
 	public void onDisable() {
-		// TODO Insert logic to be performed when the plugin is disabled
+		cp.updateDatabase();
 	}
 
 	@Override
