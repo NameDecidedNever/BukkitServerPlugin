@@ -24,20 +24,18 @@ public class ChunckClaimCommandExecutor implements CommandExecutor {
 				Player player = (Player) sender;
 				try {
 					ChunckProtection.setChunkPremission(new ChunckPremission(player.getName()),
-							new ChunckCord(player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
+							ChunckCord.getCordFromLoc(player.getLocation()));
 				} catch (Exception e) {
-					sender.sendMessage(e.getMessage());
+					sender.sendMessage("Exception: " + e.getMessage() + " " + e.getLocalizedMessage() + " " + e.fillInStackTrace() + e.getCause());
 				}
-				return true;
 
 			}
-		} else {
-			for (ChunckCord cc : ChunckProtection.chunkPremmisions.keySet()) {
-				sender.sendMessage("" + cc + " " + ChunckProtection.chunkPremmisions.get(cc));
-				return true;
-			}
 		}
-		return false;
+		for (ChunckCord cc : ChunckProtection.chunkPremmisions.keySet()) {
+			sender.sendMessage("" + cc + " " + ChunckProtection.chunkPremmisions.get(cc));
+			sender.sendMessage("got here");
+		}
+		return true;
 	}
 
 }
