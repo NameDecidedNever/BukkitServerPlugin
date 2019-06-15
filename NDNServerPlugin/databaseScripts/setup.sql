@@ -56,6 +56,22 @@ CREATE TABLE `towns` (
   `dailyMemberTaxAmount` double NOT NULL,
   PRIMARY KEY (`idtowns`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `constants` (
+  `name` varchar(64) NOT NULL,
+  `value` double DEFAULT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('MOB_KILL_FACTOR', '0.001');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('MOB_MONEY_PERCENT_TO_TOWN_OWNER', '1');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('MIN_SPAWN_FREE_TP', '100');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('COST_PER_BLOCK_TRAVEL_SPAWN_TP', '0.2');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('COST_TO_STOP_RAIN', '50');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('PLAYER_TRANSFER_TAX_PERCENT', '1');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('MIN_TOWN_DISTANCE', '100');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('TOWN_FOUNDING_COST', '100');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('TOWN_DEFAULT_RADIUS', '150');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('WORLD_BORDER_BLOCK_DIAMETER', '3000');
+INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('STARTING_MONEY_PER_PLAYER', '500');
 
 
 

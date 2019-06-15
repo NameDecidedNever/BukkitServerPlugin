@@ -8,6 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.ndn.bukkitplugin.ndnserverplugin.datautils.ConstantManager;
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 import com.ndn.bukkitplugin.ndnutils.TeleportLogic;
 
@@ -29,14 +30,15 @@ public class SimplePaidCommandExecutor implements CommandExecutor {
 			Player player = (Player) sender;
 
 			if (command.getName().equals("clearweather")) {
-				if (DataManager.getInstance().getPlayerBalance(player.getName()) >= 10) {
+				double costToStopRain = ConstantManager.constants.get("COST_TO_STOP_RAIN");
+				if (DataManager.getInstance().getPlayerBalance(player.getName()) >= costToStopRain) {
 					// 0 is the server account. if this code errors set the '0' account to the
 					// server account
 					DataManager.getInstance().makePayExchange(
-							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getServerPrimaryAccount(), 10,
+							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getServerPrimaryAccount(), costToStopRain,
 							"Clear Weather");
 					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "weather clear");
-					sender.sendMessage(ChatColor.GREEN + "The clouds part to reveal open skies.");
+					sender.sendMessage(ChatColor.GREEN + "The clouds part to reveal open skies. This cost you " + ChatColor.YELLOW + "$" + costToStopRain);
 					plugin.getServer().broadcastMessage(player.getName() + " has paid for clear weather.");
 					return true;
 				} else {

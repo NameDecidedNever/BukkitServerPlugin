@@ -10,12 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.Plugin;
 
+import com.ndn.bukkitplugin.ndnserverplugin.datautils.ConstantManager;
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 
 public class TownCommandExecutor implements CommandExecutor{
 	
-	private final double TOWN_FOUND_FEE = 10.0;
-
 	private final NDNServerPlugin plugin;
 	
 	public TownCommandExecutor(NDNServerPlugin plugin) {
@@ -28,7 +27,7 @@ public class TownCommandExecutor implements CommandExecutor{
 			Player player = (Player) sender;
 			if(command.getName().equals("found")) {
 				DataManager.getInstance().addTown(args[0], (Player) sender, player.getLocation().getBlockX(), player.getLocation().getBlockZ());
-				DataManager.getInstance().makePayExchange(DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getServerPrimaryAccount(), TOWN_FOUND_FEE, "Cost For Founding " + args[0]);
+				DataManager.getInstance().makePayExchange(DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getServerPrimaryAccount(), ConstantManager.constants.get("TOWN_FOUNDING_COST"), "Cost For Founding " + args[0]);
 				sender.sendMessage("Congratulations on founding " + args[0]);
 				for (int i = 0; i < 3; i++) {
 					FireworkManager.makeFireworkAtPlayer(plugin, player);

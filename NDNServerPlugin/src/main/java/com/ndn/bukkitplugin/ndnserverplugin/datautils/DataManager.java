@@ -3,6 +3,7 @@ package com.ndn.bukkitplugin.ndnserverplugin.datautils;
 import java.sql.*;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.bukkit.entity.Player;
 
@@ -27,6 +28,7 @@ public class DataManager {
 	// SQL Statements
 	static final String SQL_ADD_PLAYER = "INSERT INTO `players` (accountid, hashword, isverified, username, verificationcode) VALUES (?, ?, ?, ?, ?)";
 	static final String SQL_ADD_ACCOUNT = "INSERT INTO `accounts` (balance, credit, name) VALUES (?, ?, ?)";
+	static final String SQL_SELECT_CONSTANTS = "SELECT * FROM `constants`";
 	static final String SQL_SELECT_ACCOUNT_BY_NAME = "SELECT * FROM `accounts` WHERE name = ?";
 	static final String SQL_SELECT_PLAYER_BY_NAME = "SELECT * FROM `players` WHERE username = ?";
 	static final String SQL_GET_BALANCE = "SELECT balance from `accounts` WHERE idaccounts = ?";
@@ -94,7 +96,7 @@ public class DataManager {
 			preparedStmt.setInt(4, getPlayerPrimaryAccount(owner.getName()));
 			preparedStmt.setInt(5, centerX);
 			preparedStmt.setInt(6, centerZ);
-			preparedStmt.setInt(7, STARTING_TOWN_RADIUS);
+			preparedStmt.setInt(7, ConstantManager.constants.get("TOWN_DEFAULT_RADIUS").intValue());
 			preparedStmt.setDouble(8, 0);
 			preparedStmt.setDouble(9, 0.1);
 			preparedStmt.setDouble(10, 0.1);
@@ -254,7 +256,7 @@ public class DataManager {
 		}
 		return "Un-named Account";
 	}
-
+	
 	public boolean makePayExchange(int from, int to, double ammount, String message) {
 		ammount = Math.abs(ammount);
 		if (getBalance(from) < ammount) {
@@ -288,7 +290,7 @@ public class DataManager {
 			String accountName = username + "'s Account";
 
 			PreparedStatement preparedStmt = conn.prepareStatement(SQL_ADD_ACCOUNT);
-			preparedStmt.setDouble(1, 0.0);
+			preparedStmt.setDouble(1, ConstantManager.constants.get("STARTING_MONEY_PER_PLAYER"));
 			preparedStmt.setInt(2, 0);
 			preparedStmt.setString(3, accountName);
 			preparedStmt.executeUpdate();
@@ -336,6 +338,8 @@ public class DataManager {
 				preparedStmt.setString(5, verificationcode);
 				preparedStmt.executeUpdate();
 			}
+			
+			
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -361,6 +365,20 @@ public class DataManager {
 		}
 
 		return false;
+	}
+	
+	public HashMap<String, Double> getConstantsFromDB(){
+		HashMap<String, Double> toReturn = new HashMap<String, Double>();
+		try {
+		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_CONSTANTS);
+		ResultSet rs = preparedStmt.executeQuery();
+		while(rs.next()) {
+			toReturn.put(rs.getString("name"), rs.getDouble("value"));
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return toReturn;
 	}
 
 	public String getPlayerVerificationCode(String username) {

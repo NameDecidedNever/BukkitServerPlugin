@@ -2,11 +2,15 @@ package com.ndn.bukkitplugin.ndnutils;
 
 import org.bukkit.Location;
 
+import com.ndn.bukkitplugin.ndnserverplugin.datautils.ConstantManager;
+
 public class TeleportLogic {
-	public static final double TELE_COSTPERBLOCK = .05;
-	public static final double MINIMUM_PROXIMITY = 200;
+	public static double TELE_COSTPERBLOCK = .05;
+	public static double MINIMUM_PROXIMITY = 200;
 	
 	public static double getTeleportCost(Location l1, Location l2) {
+		MINIMUM_PROXIMITY = ConstantManager.constants.get("MIN_SPAWN_FREE_TP");
+		TELE_COSTPERBLOCK = ConstantManager.constants.get("COST_PER_BLOCK_TRAVEL_SPAWN_TP");
 		if (l1 == null || l2 == null) {
 			return -1;
 		}

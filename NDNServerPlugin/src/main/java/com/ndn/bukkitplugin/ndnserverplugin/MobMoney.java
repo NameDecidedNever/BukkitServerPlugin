@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import com.ndn.bukkitplugin.ndnserverplugin.datautils.ConstantManager;
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 
 public class MobMoney implements Listener {
@@ -20,7 +21,7 @@ public class MobMoney implements Listener {
 			}
 			double serverBalance = DataManager.getInstance()
 					.getBalance(DataManager.getInstance().getServerPrimaryAccount());
-			double playerPayment = (serverBalance / 10000) * monsterEnt.getMaxHealth();
+			double playerPayment = (serverBalance * ConstantManager.constants.get("MOB_KILL_FACTOR")) * monsterEnt.getMaxHealth();
 			DataManager.getInstance().makePayExchange(DataManager.getInstance().getServerPrimaryAccount(),
 					DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), playerPayment,
 					"Mob kill reward");
