@@ -2,14 +2,12 @@ package com.ndn.bukkitplugin.ndnserverplugin;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.block.Chest;
-import org.bukkit.plugin.Plugin;
-
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 import com.ndn.bukkitplugin.ndnutils.Utils;
 
@@ -39,7 +37,8 @@ public class SignShop {
 		// getting account num
 		int accNum = -1;
 		if (Utils.isNumeric(ChatColor.stripColor(sign.getLine(0)))) {
-			accNum = Integer.parseInt(ChatColor.stripColor(sign.getLine(0)));
+			throw new IllegalArgumentException("Account ID shop disabled.");
+			//accNum = Integer.parseInt(ChatColor.stripColor(sign.getLine(0)));
 		} else {
 			accNum = DataManager.getInstance().getPlayerPrimaryAccount(ChatColor.stripColor(sign.getLine(0)));
 			if (accNum <= 0) {
@@ -131,24 +130,42 @@ public class SignShop {
 	}
 	// method to get chest next to sign
 	public static Chest getChestFromSign(Sign sign) throws IllegalArgumentException {
-		org.bukkit.material.Sign matSign = (org.bukkit.material.Sign) sign.getBlock().getState().getData();
-		if (!matSign.isWallSign()) {
+		if (!isWallSign(sign)) {
 			if (sign.getBlock().getRelative(BlockFace.DOWN).getState() instanceof Chest) {
 				return (Chest) sign.getBlock().getRelative(BlockFace.DOWN).getState();
 			} else {
 				throw new IllegalArgumentException(ChatColor.RED + "Chest Not Found (Upright)");
 			}
 		} else {
-			BlockFace faceing = matSign.getFacing().getOppositeFace();
-
-			if (sign.getBlock().getRelative(faceing).getState() instanceof Chest) {
-				return (Chest) sign.getBlock().getRelative(faceing).getState();
+			BlockFace faceing = ((Directional)sign.getBlock().getBlockData()).getFacing();
+			if (sign.getBlock().getRelative(faceing.getOppositeFace()).getType().equals(Material.CHEST)) {
+				return (Chest) sign.getBlock().getRelative(faceing.getOppositeFace()).getState();
 			} else {
 				throw new IllegalArgumentException(ChatColor.RED + "Chest Not Found (SideChest)");
 			}
 
 		}
 
+	}
+	
+	//check if a sign is a wall sign
+	public static boolean isWallSign(Sign sign) {
+		switch (sign.getBlock().getType()) {
+		case ACACIA_WALL_SIGN:
+			return true;
+		case DARK_OAK_WALL_SIGN:
+			return true;
+		case BIRCH_WALL_SIGN:
+			return true;
+		case JUNGLE_WALL_SIGN:
+			return true;
+		case SPRUCE_WALL_SIGN:
+			return true;
+		case OAK_WALL_SIGN:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	// method to interact with the sign
@@ -161,7 +178,7 @@ public class SignShop {
 			player.sendMessage(ChatColor.RED + "This is your shop.");
 			return false;
 		}
-		DataManager dm = new DataManager();
+		DataManager dm = DataManager.getInstance();
 		if (dm.getBalance(accountNum) > sellCost
 				&& player.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
 			dm.makePayExchange(accountNum, dm.getPlayerPrimaryAccount(player.getName()), sellCost, "Sign Shop Sell");
@@ -186,7 +203,7 @@ public class SignShop {
 			player.sendMessage(ChatColor.RED + "This is your shop.");
 			return false;
 		}
-		DataManager dm = new DataManager();
+		DataManager dm = DataManager.getInstance();
 		if (dm.getBalance(dm.getPlayerPrimaryAccount(player.getName())) >= buyCost && linkedChest.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
 			dm.makePayExchange(dm.getPlayerPrimaryAccount(player.getName()), accountNum, buyCost, "Sign Shop Purchase");
 			player.getInventory().addItem(new ItemStack(item, extangeAmount));

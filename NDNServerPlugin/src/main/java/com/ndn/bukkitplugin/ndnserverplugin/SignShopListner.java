@@ -1,9 +1,6 @@
 package com.ndn.bukkitplugin.ndnserverplugin;
 
-import java.awt.Event;
-
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +22,7 @@ public class SignShopListner implements Listener {
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getClickedBlock().getState() instanceof Sign) {
+		if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof Sign) {
 			//String[] testMessage = new String[] { "You Right Clicked a Sign!", "Line 0: ", "Line 1: ", "Line 2: ",
 			//		"Line 3: " };
 			Sign sign = (Sign) event.getClickedBlock().getState();
