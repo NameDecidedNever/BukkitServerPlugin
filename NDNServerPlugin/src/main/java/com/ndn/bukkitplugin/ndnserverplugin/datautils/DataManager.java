@@ -1,5 +1,6 @@
 package com.ndn.bukkitplugin.ndnserverplugin.datautils;
 
+import java.awt.Rectangle;
 import java.sql.*;
 import java.time.Instant;
 import java.util.Date;
@@ -27,10 +28,18 @@ public class DataManager {
 
 	// SQL Statements
 	static final String SQL_ADD_PLAYER = "INSERT INTO `players` (accountid, hashword, isverified, username, verificationcode) VALUES (?, ?, ?, ?, ?)";
+	static final String SQL_ADD_PLOT = "INSERT INTO `plots` (name, x, z, length, width, type, pricePerDay, townid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	static final String SQL_ADD_ACCOUNT = "INSERT INTO `accounts` (balance, credit, name) VALUES (?, ?, ?)";
+	static final String SQL_SELECT_EXPENSES = "SELECT * FROM `expenses`";
+	static final String SQL_SELECT_PLOT_BY_AREA = "SELECT * FROM `plots` WHERE ? > x AND ? < x + width AND ? > z AND ? < z + length";
+	static final String SQL_SELECT_TOWN_BY_OWNER = "SELECT * FROM `towns` WHERE ownerName = ?";
+	static final String SQL_SELECT_TOWN_BY_AREA = "SELECT * FROM `towns` WHERE ? > (centerX - radius) AND ? < (centerX + radius) AND ? > (centerZ - radius) AND ? < (centerZ + radius)";
+	static final String SQL_SELECT_TOWN_BY_ID = "SELECT * FROM `towns` WHERE idtowns = ?";
+	static final String SQL_SELECT_ALL_TOWNS = "SELECT * FROM `towns`";
 	static final String SQL_SELECT_CONSTANTS = "SELECT * FROM `constants`";
 	static final String SQL_SELECT_ACCOUNT_BY_NAME = "SELECT * FROM `accounts` WHERE name = ?";
 	static final String SQL_SELECT_PLAYER_BY_NAME = "SELECT * FROM `players` WHERE username = ?";
+	static final String SQL_SELECT_PLAYER_BY_ID = "SELECT * FROM `players` WHERE idplayers = ?";
 	static final String SQL_GET_BALANCE = "SELECT balance from `accounts` WHERE idaccounts = ?";
 	static final String SQL_GET_ACCOUNT_NAME_BY_ID = "SELECT name from `accounts` WHERE idaccounts = ?";
 	static final String SQL_UPDATE_BALANCE = "UPDATE `accounts` SET balance = ? WHERE idaccounts = ?";
@@ -40,6 +49,7 @@ public class DataManager {
 	static final String SQL_UPDATE_ABOUT_PEAK_PLAYERS = "UPDATE `about` SET maxPlayersOnline = ?";
 	static final String SQL_SELECT_ABOUT = "SELECT * FROM `about`";
 	static final String SQL_ADD_TOWN = "INSERT INTO `towns` (name, dateFounded, ownerName, ownerAccountId, centerX, centerZ, radius, mobKillTaxPerc, chestShopTaxPerc, warpTaxPerc, auctionTaxPerc, shippingTaxPerc, dailyMemberTaxAmount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	static final String SQL_GET_TOWN_BY_OWNER_NAME = "SELECT * FROM `towns` WHERE ownerName = ?";
 	
 	Connection conn = null;
 
@@ -86,6 +96,227 @@ public class DataManager {
 		return false;
 	}
 	
+	public String getPlayerNameFromId(int id) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLAYER_BY_ID);
+			preparedStmt.setInt(1, id);
+			ResultSet rs = preparedStmt.executeQuery();
+			if(rs.next()) {
+				return rs.getString("username");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
+	public void executeDailyExpenses() {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_EXPENSES);
+			ResultSet rs = preparedStmt.executeQuery();
+			while(rs.next()) {
+				DataManager.getInstance().makePayExchange(rs.getInt("sender"), rs.getInt("reciever"), rs.getDouble("amount"), rs.getString("message"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public int getPlayerIdFromName(String name) {
+		try {
+		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLAYER_BY_NAME);
+		preparedStmt.setString(1, name);
+		ResultSet player = preparedStmt.executeQuery();
+
+		if(player.next()) {
+			return player.getInt("idplayers");
+		}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public int getTownIdFromOwnerName(String name) {
+		try {
+		PreparedStatement preparedStmt = conn.prepareStatement(SQL_GET_TOWN_BY_OWNER_NAME);
+		preparedStmt.setString(1, name);
+		ResultSet town = preparedStmt.executeQuery();
+
+		if(town.next()) {
+			return town.getInt("idtowns");
+		}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public String getTownOwnerName(int townid) {
+		try {
+		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
+		preparedStmt.setInt(1, townid);
+		ResultSet town = preparedStmt.executeQuery();
+		if(town.next()) {
+			return town.getString("ownerName");
+		}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
+	public double getTownMobTax(int id) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
+			preparedStmt.setInt(1, id);
+			ResultSet town = preparedStmt.executeQuery();
+			if(town.next()) {
+				return town.getDouble("mobKillTaxPerc");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return 0.0;
+	}
+	
+	public double getTownShopTax(int id) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
+			preparedStmt.setInt(1, id);
+			ResultSet town = preparedStmt.executeQuery();
+			if(town.next()) {
+				return town.getDouble("chestShopTaxPerc");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return 0.0;
+	}
+	
+	public double getTownWarpTax(int id) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
+			preparedStmt.setInt(1, id);
+			ResultSet town = preparedStmt.executeQuery();
+			if(town.next()) {
+				return town.getDouble("warpTaxPerc");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return 0.0;
+	}
+	
+	public int getTownByArea(int x, int z) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_AREA);
+			preparedStmt.setInt(1, x);
+			preparedStmt.setInt(2, x);
+			preparedStmt.setInt(3, z);
+			preparedStmt.setInt(4, z);
+			ResultSet town = preparedStmt.executeQuery();
+			if(town.next()) {
+				return town.getInt("idtowns");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return -1;
+	}
+	//-1 = No plot can edit
+	//0 = Can't edit
+	//1 = Can Edit Residential
+	//2 = Can Edit Market
+	public int getPlotEditableCode(int x, int z, String username) {
+		int townId = -1;
+		boolean isTownOwner = false;
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_AREA);
+			preparedStmt.setInt(1, x);
+			preparedStmt.setInt(2, x);
+			preparedStmt.setInt(3, z);
+			preparedStmt.setInt(4, z);
+			ResultSet town = preparedStmt.executeQuery();
+			if(town.next()) {
+				townId = town.getInt("idtowns");
+				if(town.getString("ownerName").equals(username)) {
+					isTownOwner = true;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLOT_BY_AREA);
+			preparedStmt.setInt(1, x);
+			preparedStmt.setInt(2, x);
+			preparedStmt.setInt(3, z);
+			preparedStmt.setInt(4, z);
+			ResultSet plot = preparedStmt.executeQuery();
+			if(plot.next()) {
+				if(plot.getInt("renterid") == (DataManager.getInstance().getPlayerIdFromName(username))) {
+					return plot.getInt("type");
+				}else {
+					return 0;
+				}
+			}else if(townId != -1){
+				if(isTownOwner) {
+					return -1;
+				}else {
+					return 0;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return -1;
+	}
+	
+	public boolean checkIfTownCanBeFounded(int x, int z) {
+		boolean canBeFounded = true;
+		try {
+		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_ALL_TOWNS);
+		ResultSet towns = preparedStmt.executeQuery();
+		while(towns.next()) {
+			int centerX = towns.getInt("centerX");
+			int centerZ = towns.getInt("centerZ");
+			int radius = towns.getInt("radius");
+			int minDistance = ConstantManager.constants.get("MIN_TOWN_DISTANCE").intValue();
+			int foundingRadius = ConstantManager.constants.get("TOWN_DEFAULT_RADIUS").intValue();
+			Rectangle townToBeCreated = new Rectangle(x - foundingRadius, z - foundingRadius, foundingRadius * 2, foundingRadius * 2);
+			Rectangle townToBeCheckedBound = new Rectangle(centerX - radius - minDistance, centerZ - radius - minDistance, (radius + minDistance) * 2, (radius + minDistance) * 2);
+			if(townToBeCreated.intersects(townToBeCheckedBound)) {
+				canBeFounded = false;
+			}
+		}
+	} catch (SQLException e) {
+		e.printStackTrace();
+		canBeFounded = false;
+	}
+	return canBeFounded;
+	}
+	
+	public boolean checkIfPlayerHasOwnTown(String username) {
+		try {
+		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_OWNER);
+		preparedStmt.setString(1, username);
+		ResultSet towns = preparedStmt.executeQuery();
+		return towns.next();
+	} catch (SQLException e) {
+		e.printStackTrace();
+
+	}
+		return false;
+	}
+
+	
 	public void addTown(String name, Player owner, int centerX, int centerZ) {
 		try {
 			PreparedStatement preparedStmt;
@@ -103,6 +334,24 @@ public class DataManager {
 			preparedStmt.setDouble(11, 0.1);
 			preparedStmt.setDouble(12, 0.1);
 			preparedStmt.setDouble(13, 0.1);
+			preparedStmt.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void addPlot(String plotName, int x, int z, int length, int width, int type, double pricePerDay, int townid) {
+		try {
+			PreparedStatement preparedStmt;
+			preparedStmt = conn.prepareStatement(SQL_ADD_PLOT);
+			preparedStmt.setString(1, plotName);
+			preparedStmt.setInt(2, x);
+			preparedStmt.setInt(3, z);
+			preparedStmt.setInt(4, length);
+			preparedStmt.setInt(5, width);
+			preparedStmt.setInt(6, type);
+			preparedStmt.setDouble(7, pricePerDay);
+			preparedStmt.setInt(8, townid);
 			preparedStmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();

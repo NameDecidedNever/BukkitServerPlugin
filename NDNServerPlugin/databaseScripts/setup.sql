@@ -28,7 +28,7 @@ CREATE TABLE `transactions` (
   PRIMARY KEY (`idtransactions`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 CREATE TABLE `expenses` (
-  `idexpenses` int(11) NOT NULL,
+  `idexpenses` int(11) NOT NULL AUTO_INCREMENT,
   `sender` int(11) NOT NULL,
   `reciever` int(11) NOT NULL,
   `amount` double NOT NULL,
@@ -72,18 +72,19 @@ INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('TOWN_FOUNDIN
 INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('TOWN_DEFAULT_RADIUS', '150');
 INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('WORLD_BORDER_BLOCK_DIAMETER', '3000');
 INSERT INTO `minecraft-data`.`constants` (`name`, `value`) VALUES ('STARTING_MONEY_PER_PLAYER', '500');
-CREATE TABLE `minecraft-data`.`plots` (
-  `idplots` INT NOT NULL,
-  `name` VARCHAR(45) NULL,
-  `pricePerDay` DOUBLE NULL,
-  `x` INT NULL,
-  `z` INT NULL,
-  `length` INT NULL,
-  `width` INT NULL,
-  `type` VARCHAR(45) NULL,
-  `townid` INT NULL,
-  `renterid` INT NULL,
-  PRIMARY KEY (`idplots`));
+CREATE TABLE `plots` (
+  `idplots` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  `pricePerDay` double DEFAULT NULL,
+  `x` int(11) DEFAULT NULL,
+  `z` int(11) DEFAULT NULL,
+  `length` int(11) DEFAULT NULL,
+  `width` int(11) DEFAULT NULL,
+  `type` int(11) DEFAULT NULL,
+  `townid` int(11) DEFAULT NULL,
+  `renterid` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idplots`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 
