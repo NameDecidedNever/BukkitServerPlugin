@@ -54,8 +54,11 @@ CREATE TABLE `towns` (
   `auctionTaxPerc` double NOT NULL,
   `shippingTaxPerc` double NOT NULL,
   `dailyMemberTaxAmount` double NOT NULL,
+  `warpLocationX` int(11) NOT NULL,
+  `warpLocationY` int(11) NOT NULL,
+  `warpLocationZ` int(11) NOT NULL,
   PRIMARY KEY (`idtowns`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 CREATE TABLE `constants` (
   `name` varchar(64) NOT NULL,
   `value` double DEFAULT NULL,

@@ -16,6 +16,12 @@ commands:
    spawn:
       description: Teleport to spawn for a high cost
       usage: /<command>
+   warp:
+      description: Teleport to a town
+      usage: /<command> [townName]
+   setwarp:
+      description: Teleport to a town
+      usage: /<command> [townName]
    found:
       description: Found your very own town from the position you are currently standing!
       usage: /<command> [townName]

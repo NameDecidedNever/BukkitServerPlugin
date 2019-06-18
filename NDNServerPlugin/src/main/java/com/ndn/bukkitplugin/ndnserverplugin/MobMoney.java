@@ -47,9 +47,14 @@ public class MobMoney implements Listener {
 			if(townId != -1) {
 				int townOwnerAccountId = DataManager.getInstance().getPlayerPrimaryAccount(DataManager.getInstance().getTownOwnerName(townId));
 				DataManager.getInstance().makePayExchange(DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), townOwnerAccountId, townPayment, "Mob Kill Tax on " + player.getName() + "");
+				try {
 				Player townOwnerPlayer = plugin.getServer().getPlayer(DataManager.getInstance().getTownOwnerName(townId));
-				townOwnerPlayer.sendMessage(ChatColor.GREEN + "Just recieved a mob kill tax reward from " + player.getName());
-			}
+				String valueMessage = ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format(townPayment);
+				townOwnerPlayer.sendMessage(ChatColor.GREEN + "Recieved a mob kill tax reward of " + valueMessage);
+				}catch(Exception e) {
+					
+				}
+				}
 		}
 	}
 }

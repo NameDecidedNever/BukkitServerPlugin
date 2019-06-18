@@ -6,6 +6,7 @@ import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -58,11 +59,13 @@ public class ProtectionListener implements Listener {
 		  @EventHandler
 		    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
 			  	if(event.getDamager() instanceof Player) {
+			  		if(!(event.getEntity() instanceof Monster)) {
 			  		String playerName = ((Player) event.getDamager()).getName();
 		    		int editCode = DataManager.getInstance().getPlotEditableCode((int) event.getEntity().getLocation().getX(), (int) event.getEntity().getLocation().getZ(), playerName);
 		    		if(editCode == 0) {
 		    			event.setCancelled(true);
 		    		}
+			  		}
 			  	}
 		    }
 		

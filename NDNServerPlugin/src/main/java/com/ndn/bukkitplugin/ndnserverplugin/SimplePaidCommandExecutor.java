@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.ConstantManager;
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
@@ -70,6 +71,42 @@ public class SimplePaidCommandExecutor implements CommandExecutor {
 					return true;
 				}
 
+			}else if (command.getName().equals("warp")) {
+				if(args.length == 1) {
+				String townName = args[0];
+				int townId = DataManager.getInstance().getTownIdFromName(townName);
+				if(townId != -1) {
+				double costToWarp = TeleportLogic.getTeleportCost(player.getLocation(), DataManager.getInstance().getTownWarpLocation(townId));
+				double additionalCostToPlayer = costToWarp * DataManager.getInstance().getTownWarpTax(townId);
+				double totalCostToPlayer = costToWarp + additionalCostToPlayer;
+				if (DataManager.getInstance().getPlayerBalance(player.getName()) >= totalCostToPlayer) {
+					DataManager.getInstance().makePayExchange(
+							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getServerPrimaryAccount(), costToWarp,
+							"Warp To " + townName);
+					DataManager.getInstance().makePayExchange(
+							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getPlayerPrimaryAccount(DataManager.getInstance().getTownOwnerName(townId)), additionalCostToPlayer,
+							"Warp Tax for " + townName);
+				player.teleport(DataManager.getInstance().getTownWarpLocation(townId));
+				String message1 = ChatColor.GREEN + "Paid ";
+				String message2 = ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format(totalCostToPlayer);
+				String message3 = ChatColor.GREEN + " for your warp";
+				String message4 = ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format(additionalCostToPlayer);
+				player.sendMessage(message1 + message2 + message3);
+				try {
+				plugin.getServer().getPlayer(DataManager.getInstance().getTownOwnerName(townId)).sendMessage(ChatColor.GREEN + "Recieved town warp tax income " + message4);
+				} catch(Exception e) {
+					
+				}
+				} else {
+					player.sendMessage(ChatColor.RED + "You do not have enough account balance to pay for this warp!");
+				}
+				} else {
+					player.sendMessage(ChatColor.RED + "Inavlid town name!");
+				}
+				} else {
+					player.sendMessage(ChatColor.RED + "Please provide the name of the warp! See the help menu for details.");
+				}
+				return true;
 			}
 
 		} else {

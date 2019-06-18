@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.ndn.bukkitplugin.ndnutils.VerificationCodeGenerator;
@@ -32,10 +34,13 @@ public class DataManager {
 	static final String SQL_ADD_ACCOUNT = "INSERT INTO `accounts` (balance, credit, name) VALUES (?, ?, ?)";
 	static final String SQL_SELECT_EXPENSES = "SELECT * FROM `expenses`";
 	static final String SQL_SELECT_PLOT_BY_AREA = "SELECT * FROM `plots` WHERE ? > x AND ? < x + width AND ? > z AND ? < z + length";
+	static final String SQL_SELECT_PLOT_BY_PLAYER_RESIDENTIAL = "SELECT * FROM `plots` WHERE renterid = ? AND type = 1";
 	static final String SQL_SELECT_TOWN_BY_OWNER = "SELECT * FROM `towns` WHERE ownerName = ?";
 	static final String SQL_SELECT_TOWN_BY_AREA = "SELECT * FROM `towns` WHERE ? > (centerX - radius) AND ? < (centerX + radius) AND ? > (centerZ - radius) AND ? < (centerZ + radius)";
 	static final String SQL_SELECT_TOWN_BY_ID = "SELECT * FROM `towns` WHERE idtowns = ?";
+	static final String SQL_SELECT_TOWN_BY_NAME = "SELECT * FROM `towns` WHERE name = ?";
 	static final String SQL_SELECT_ALL_TOWNS = "SELECT * FROM `towns`";
+	static final String SQL_UPDATE_TOWN_WARP = "UPDATE `towns` SET warpLocationX = ?, warpLocationY = ?, warpLocationZ = ? WHERE idtowns = ?";
 	static final String SQL_SELECT_CONSTANTS = "SELECT * FROM `constants`";
 	static final String SQL_SELECT_ACCOUNT_BY_NAME = "SELECT * FROM `accounts` WHERE name = ?";
 	static final String SQL_SELECT_PLAYER_BY_NAME = "SELECT * FROM `players` WHERE username = ?";
@@ -48,9 +53,9 @@ public class DataManager {
 	static final String SQL_UPDATE_ABOUT_PLAYERS = "UPDATE `about` SET currentPlayersOnline = ?";
 	static final String SQL_UPDATE_ABOUT_PEAK_PLAYERS = "UPDATE `about` SET maxPlayersOnline = ?";
 	static final String SQL_SELECT_ABOUT = "SELECT * FROM `about`";
-	static final String SQL_ADD_TOWN = "INSERT INTO `towns` (name, dateFounded, ownerName, ownerAccountId, centerX, centerZ, radius, mobKillTaxPerc, chestShopTaxPerc, warpTaxPerc, auctionTaxPerc, shippingTaxPerc, dailyMemberTaxAmount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	static final String SQL_ADD_TOWN = "INSERT INTO `towns` (name, dateFounded, ownerName, ownerAccountId, centerX, centerZ, radius, mobKillTaxPerc, chestShopTaxPerc, warpTaxPerc, auctionTaxPerc, shippingTaxPerc, dailyMemberTaxAmount, warpLocationX, warpLocationY, warpLocationZ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	static final String SQL_GET_TOWN_BY_OWNER_NAME = "SELECT * FROM `towns` WHERE ownerName = ?";
-	
+
 	Connection conn = null;
 
 	private static DataManager instance = null;
@@ -72,7 +77,7 @@ public class DataManager {
 		}
 		return instance;
 	}
-	
+
 	private int getLastPlayerPeak() {
 		try {
 			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_ABOUT);
@@ -95,13 +100,13 @@ public class DataManager {
 		}
 		return false;
 	}
-	
+
 	public String getPlayerNameFromId(int id) {
 		try {
 			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLAYER_BY_ID);
 			preparedStmt.setInt(1, id);
 			ResultSet rs = preparedStmt.executeQuery();
-			if(rs.next()) {
+			if (rs.next()) {
 				return rs.getString("username");
 			}
 		} catch (SQLException e) {
@@ -109,69 +114,70 @@ public class DataManager {
 		}
 		return "";
 	}
-	
+
 	public void executeDailyExpenses() {
 		try {
 			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_EXPENSES);
 			ResultSet rs = preparedStmt.executeQuery();
-			while(rs.next()) {
-				DataManager.getInstance().makePayExchange(rs.getInt("sender"), rs.getInt("reciever"), rs.getDouble("amount"), rs.getString("message"));
+			while (rs.next()) {
+				DataManager.getInstance().makePayExchange(rs.getInt("sender"), rs.getInt("reciever"),
+						rs.getDouble("amount"), rs.getString("message"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public int getPlayerIdFromName(String name) {
 		try {
-		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLAYER_BY_NAME);
-		preparedStmt.setString(1, name);
-		ResultSet player = preparedStmt.executeQuery();
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLAYER_BY_NAME);
+			preparedStmt.setString(1, name);
+			ResultSet player = preparedStmt.executeQuery();
 
-		if(player.next()) {
-			return player.getInt("idplayers");
-		}
+			if (player.next()) {
+				return player.getInt("idplayers");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return -1;
 	}
-	
+
 	public int getTownIdFromOwnerName(String name) {
 		try {
-		PreparedStatement preparedStmt = conn.prepareStatement(SQL_GET_TOWN_BY_OWNER_NAME);
-		preparedStmt.setString(1, name);
-		ResultSet town = preparedStmt.executeQuery();
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_GET_TOWN_BY_OWNER_NAME);
+			preparedStmt.setString(1, name);
+			ResultSet town = preparedStmt.executeQuery();
 
-		if(town.next()) {
-			return town.getInt("idtowns");
-		}
+			if (town.next()) {
+				return town.getInt("idtowns");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return -1;
 	}
-	
+
 	public String getTownOwnerName(int townid) {
 		try {
-		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
-		preparedStmt.setInt(1, townid);
-		ResultSet town = preparedStmt.executeQuery();
-		if(town.next()) {
-			return town.getString("ownerName");
-		}
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
+			preparedStmt.setInt(1, townid);
+			ResultSet town = preparedStmt.executeQuery();
+			if (town.next()) {
+				return town.getString("ownerName");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return "";
 	}
-	
+
 	public double getTownMobTax(int id) {
 		try {
 			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
 			preparedStmt.setInt(1, id);
 			ResultSet town = preparedStmt.executeQuery();
-			if(town.next()) {
+			if (town.next()) {
 				return town.getDouble("mobKillTaxPerc");
 			}
 		} catch (SQLException e) {
@@ -180,13 +186,13 @@ public class DataManager {
 		}
 		return 0.0;
 	}
-	
+
 	public double getTownShopTax(int id) {
 		try {
 			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
 			preparedStmt.setInt(1, id);
 			ResultSet town = preparedStmt.executeQuery();
-			if(town.next()) {
+			if (town.next()) {
 				return town.getDouble("chestShopTaxPerc");
 			}
 		} catch (SQLException e) {
@@ -195,13 +201,13 @@ public class DataManager {
 		}
 		return 0.0;
 	}
-	
+
 	public double getTownWarpTax(int id) {
 		try {
 			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
 			preparedStmt.setInt(1, id);
 			ResultSet town = preparedStmt.executeQuery();
-			if(town.next()) {
+			if (town.next()) {
 				return town.getDouble("warpTaxPerc");
 			}
 		} catch (SQLException e) {
@@ -210,16 +216,13 @@ public class DataManager {
 		}
 		return 0.0;
 	}
-	
-	public int getTownByArea(int x, int z) {
+
+	public int getTownIdFromName(String name) {
 		try {
-			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_AREA);
-			preparedStmt.setInt(1, x);
-			preparedStmt.setInt(2, x);
-			preparedStmt.setInt(3, z);
-			preparedStmt.setInt(4, z);
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_NAME);
+			preparedStmt.setString(1, name);
 			ResultSet town = preparedStmt.executeQuery();
-			if(town.next()) {
+			if (town.next()) {
 				return town.getInt("idtowns");
 			}
 		} catch (SQLException e) {
@@ -228,10 +231,110 @@ public class DataManager {
 		}
 		return -1;
 	}
-	//-1 = No plot can edit
-	//0 = Can't edit
-	//1 = Can Edit Residential
-	//2 = Can Edit Market
+
+	public void setTownWarpLocation(Location loc, int townid) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_UPDATE_TOWN_WARP);
+			preparedStmt.setInt(1, loc.getBlockX());
+			preparedStmt.setInt(2, loc.getBlockY());
+			preparedStmt.setInt(3, loc.getBlockZ());
+			preparedStmt.setInt(4, townid);
+			preparedStmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+	}
+
+	public Location getTownWarpLocation(int id) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
+			preparedStmt.setInt(1, id);
+			ResultSet town = preparedStmt.executeQuery();
+			if (town.next()) {
+				return new Location(Bukkit.getWorld("world"), (double) town.getInt("warpLocationX"),
+						(double) town.getInt("warpLocationY"), (double) town.getInt("warpLocationZ"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return null;
+	}
+
+	public int getTownByArea(int x, int z) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_AREA);
+			preparedStmt.setInt(1, x);
+			preparedStmt.setInt(2, x);
+			preparedStmt.setInt(3, z);
+			preparedStmt.setInt(4, z);
+			ResultSet town = preparedStmt.executeQuery();
+			if (town.next()) {
+				return town.getInt("idtowns");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return -1;
+	}
+	// -1 = No plot can edit
+	// 0 = Can't edit
+	// 1 = Can Edit Residential
+	// 2 = Can Edit Market
+	
+	public Rectangle getPlotBoundary(int x, int z) {
+
+			try {
+				PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLOT_BY_AREA);
+				preparedStmt.setInt(1, x);
+				preparedStmt.setInt(2, x);
+				preparedStmt.setInt(3, z);
+				preparedStmt.setInt(4, z);
+				ResultSet plot = preparedStmt.executeQuery();
+				if (plot.next()) {
+						return new Rectangle(plot.getInt("x"), plot.getInt("z"), plot.getInt("width"), plot.getInt("length"));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		return null;
+	}
+
+	public int getPlotType(int x, int z) {
+		int townId = -1;
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_AREA);
+			preparedStmt.setInt(1, x);
+			preparedStmt.setInt(2, x);
+			preparedStmt.setInt(3, z);
+			preparedStmt.setInt(4, z);
+			ResultSet town = preparedStmt.executeQuery();
+			if (town.next()) {
+				townId = town.getInt("idtowns");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if (townId != -1) {
+			try {
+				PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLOT_BY_AREA);
+				preparedStmt.setInt(1, x);
+				preparedStmt.setInt(2, x);
+				preparedStmt.setInt(3, z);
+				preparedStmt.setInt(4, z);
+				ResultSet plot = preparedStmt.executeQuery();
+				if (plot.next()) {
+						return plot.getInt("type");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return -1;
+	}
+
 	public int getPlotEditableCode(int x, int z, String username) {
 		int townId = -1;
 		boolean isTownOwner = false;
@@ -242,9 +345,9 @@ public class DataManager {
 			preparedStmt.setInt(3, z);
 			preparedStmt.setInt(4, z);
 			ResultSet town = preparedStmt.executeQuery();
-			if(town.next()) {
+			if (town.next()) {
 				townId = town.getInt("idtowns");
-				if(town.getString("ownerName").equals(username)) {
+				if (town.getString("ownerName").equals(username)) {
 					isTownOwner = true;
 				}
 			}
@@ -259,16 +362,16 @@ public class DataManager {
 			preparedStmt.setInt(3, z);
 			preparedStmt.setInt(4, z);
 			ResultSet plot = preparedStmt.executeQuery();
-			if(plot.next()) {
-				if(plot.getInt("renterid") == (DataManager.getInstance().getPlayerIdFromName(username))) {
+			if (plot.next()) {
+				if (plot.getInt("renterid") == (DataManager.getInstance().getPlayerIdFromName(username))) {
 					return plot.getInt("type");
-				}else {
+				} else {
 					return 0;
 				}
-			}else if(townId != -1){
-				if(isTownOwner) {
+			} else if (townId != -1) {
+				if (isTownOwner) {
 					return -1;
-				}else {
+				} else {
 					return 0;
 				}
 			}
@@ -278,46 +381,62 @@ public class DataManager {
 		}
 		return -1;
 	}
-	
+
+	public int getPlayerTownAffiliation(String name) {
+		try {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLOT_BY_PLAYER_RESIDENTIAL);
+			preparedStmt.setInt(1, DataManager.getInstance().getPlayerIdFromName(name));
+			ResultSet plot = preparedStmt.executeQuery();
+			if (plot.next()) {
+				return plot.getInt("townid");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return -1;
+	}
+
 	public boolean checkIfTownCanBeFounded(int x, int z) {
 		boolean canBeFounded = true;
 		try {
-		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_ALL_TOWNS);
-		ResultSet towns = preparedStmt.executeQuery();
-		while(towns.next()) {
-			int centerX = towns.getInt("centerX");
-			int centerZ = towns.getInt("centerZ");
-			int radius = towns.getInt("radius");
-			int minDistance = ConstantManager.constants.get("MIN_TOWN_DISTANCE").intValue();
-			int foundingRadius = ConstantManager.constants.get("TOWN_DEFAULT_RADIUS").intValue();
-			Rectangle townToBeCreated = new Rectangle(x - foundingRadius, z - foundingRadius, foundingRadius * 2, foundingRadius * 2);
-			Rectangle townToBeCheckedBound = new Rectangle(centerX - radius - minDistance, centerZ - radius - minDistance, (radius + minDistance) * 2, (radius + minDistance) * 2);
-			if(townToBeCreated.intersects(townToBeCheckedBound)) {
-				canBeFounded = false;
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_ALL_TOWNS);
+			ResultSet towns = preparedStmt.executeQuery();
+			while (towns.next()) {
+				int centerX = towns.getInt("centerX");
+				int centerZ = towns.getInt("centerZ");
+				int radius = towns.getInt("radius");
+				int minDistance = ConstantManager.constants.get("MIN_TOWN_DISTANCE").intValue();
+				int foundingRadius = ConstantManager.constants.get("TOWN_DEFAULT_RADIUS").intValue();
+				Rectangle townToBeCreated = new Rectangle(x - foundingRadius, z - foundingRadius, foundingRadius * 2,
+						foundingRadius * 2);
+				Rectangle townToBeCheckedBound = new Rectangle(centerX - radius - minDistance,
+						centerZ - radius - minDistance, (radius + minDistance) * 2, (radius + minDistance) * 2);
+				if (townToBeCreated.intersects(townToBeCheckedBound)) {
+					canBeFounded = false;
+				}
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			canBeFounded = false;
 		}
-	} catch (SQLException e) {
-		e.printStackTrace();
-		canBeFounded = false;
+		return canBeFounded;
 	}
-	return canBeFounded;
-	}
-	
+
 	public boolean checkIfPlayerHasOwnTown(String username) {
 		try {
-		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_OWNER);
-		preparedStmt.setString(1, username);
-		ResultSet towns = preparedStmt.executeQuery();
-		return towns.next();
-	} catch (SQLException e) {
-		e.printStackTrace();
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_OWNER);
+			preparedStmt.setString(1, username);
+			ResultSet towns = preparedStmt.executeQuery();
+			return towns.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
 
-	}
+		}
 		return false;
 	}
 
-	
-	public void addTown(String name, Player owner, int centerX, int centerZ) {
+	public void addTown(String name, Player owner, int centerX, int centerZ, int yForDefaultWarp) {
 		try {
 			PreparedStatement preparedStmt;
 			preparedStmt = conn.prepareStatement(SQL_ADD_TOWN);
@@ -334,13 +453,17 @@ public class DataManager {
 			preparedStmt.setDouble(11, 0.1);
 			preparedStmt.setDouble(12, 0.1);
 			preparedStmt.setDouble(13, 0.1);
+			preparedStmt.setInt(14, centerX);
+			preparedStmt.setInt(15, yForDefaultWarp);
+			preparedStmt.setInt(16, centerZ);
 			preparedStmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void addPlot(String plotName, int x, int z, int length, int width, int type, double pricePerDay, int townid) {
+
+	public void addPlot(String plotName, int x, int z, int length, int width, int type, double pricePerDay,
+			int townid) {
 		try {
 			PreparedStatement preparedStmt;
 			preparedStmt = conn.prepareStatement(SQL_ADD_PLOT);
@@ -384,7 +507,7 @@ public class DataManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		if(getLastPlayerPeak() < newNum) {
+		if (getLastPlayerPeak() < newNum) {
 			updateMaxPlayersNumber(newNum);
 		}
 	}
@@ -505,7 +628,7 @@ public class DataManager {
 		}
 		return "Un-named Account";
 	}
-	
+
 	public boolean makePayExchange(int from, int to, double ammount, String message) {
 		ammount = Math.abs(ammount);
 		if (getBalance(from) < ammount) {
@@ -587,8 +710,6 @@ public class DataManager {
 				preparedStmt.setString(5, verificationcode);
 				preparedStmt.executeUpdate();
 			}
-			
-			
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -615,16 +736,16 @@ public class DataManager {
 
 		return false;
 	}
-	
-	public HashMap<String, Double> getConstantsFromDB(){
+
+	public HashMap<String, Double> getConstantsFromDB() {
 		HashMap<String, Double> toReturn = new HashMap<String, Double>();
 		try {
-		PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_CONSTANTS);
-		ResultSet rs = preparedStmt.executeQuery();
-		while(rs.next()) {
-			toReturn.put(rs.getString("name"), rs.getDouble("value"));
-		}
-		}catch(Exception e) {
+			PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_CONSTANTS);
+			ResultSet rs = preparedStmt.executeQuery();
+			while (rs.next()) {
+				toReturn.put(rs.getString("name"), rs.getDouble("value"));
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return toReturn;

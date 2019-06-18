@@ -45,9 +45,11 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 		getCommand("account").setExecutor(mce);
 		getCommand("spawn").setExecutor(spce);
 		getCommand("clearweather").setExecutor(spce);
+		getCommand("warp").setExecutor(spce);
 		getCommand("found").setExecutor(tce);
 		getCommand("startplot").setExecutor(tce);
 		getCommand("finishplot").setExecutor(tce);
+		getCommand("setwarp").setExecutor(tce);
 
 		recipieFurnace();
 

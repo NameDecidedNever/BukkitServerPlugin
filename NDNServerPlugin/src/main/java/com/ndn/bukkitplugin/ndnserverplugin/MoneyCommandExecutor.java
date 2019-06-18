@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.ndn.bukkitplugin.ndnserverplugin.datautils.ConstantManager;
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 
 public class MoneyCommandExecutor implements CommandExecutor {
@@ -21,21 +22,24 @@ public class MoneyCommandExecutor implements CommandExecutor {
 		if (sender instanceof Player) {
 			// TODO: find better solution than shift int. Possible passed in arg?
 			Player player = (Player) sender;
-			if (plugin.getServer().getPlayer(reciver) != null) {
+				if(!(DataManager.getInstance().getPlayerTownAffiliation(player.getName()) == DataManager.getInstance().getPlayerTownAffiliation(reciver)) || DataManager.getInstance().getPlayerTownAffiliation(player.getName()) == -1) {
+					double tax = (ConstantManager.constants.get("PLAYER_TRANSFER_TAX_PERCENT") / 100.0) * amount;
+					DataManager.getInstance().makePayExchange(DataManager.getInstance().getPlayerPrimaryAccount(player.getName()), DataManager.getInstance().getServerPrimaryAccount(), tax, "Player To Player Transfer Tax");
+					player.sendMessage(ChatColor.GREEN + "Charging " + ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format(tax) + ChatColor.GREEN + " because players are not residents of the same town...");
+				}
 				if (DataManager.getInstance().makePayExchange(
 						DataManager.getInstance().getPlayerPrimaryAccount(player.getName()),
 						DataManager.getInstance().getPlayerPrimaryAccount(reciver), amount, reason)) {
 					player.sendMessage(ChatColor.GREEN + "Transaction Complete!");
+					if (plugin.getServer().getPlayer(reciver) != null) {
 					Bukkit.getPlayer(reciver)
 							.sendMessage(ChatColor.GREEN + "You've just recieved " + ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format( amount )
 									+ ChatColor.GREEN + " from " + ChatColor.BLUE + player.getName() + " '" + reason
 									+ "'");
+					}
 				} else {
 					player.sendMessage(ChatColor.RED + "Insufficient Funds");
 				}
-			} else {
-				player.sendMessage(ChatColor.RED + "That player doesn't exist...");
-			}
 			return true;
 		}
 		return false;

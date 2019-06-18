@@ -1,5 +1,6 @@
 package com.ndn.bukkitplugin.ndnserverplugin;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -179,13 +180,26 @@ public class SignShop {
 			return false;
 		}
 		DataManager dm = DataManager.getInstance();
-		if (dm.getBalance(accountNum) > sellCost
+		int townId = DataManager.getInstance().getTownByArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ());
+		if(townId == -1) {
+			player.sendMessage(ChatColor.RED + "You must be within a town to use a sign shop!");
+			return false;
+		}
+		double taxToTown = sellCost * dm.getTownShopTax(townId);
+		double totalSellCost = sellCost + taxToTown;
+		if (dm.getBalance(accountNum) > totalSellCost 
 				&& player.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
 			dm.makePayExchange(accountNum, dm.getPlayerPrimaryAccount(player.getName()), sellCost, "Sign Shop Sell");
+			dm.makePayExchange(dm.getPlayerPrimaryAccount(player.getName()), dm.getPlayerPrimaryAccount(dm.getTownOwnerName(townId)), taxToTown, "Sign Shop Tax");
 			player.getInventory().removeItem(new ItemStack(item, extangeAmount));
 			player.sendMessage(ChatColor.BLUE + "You sold " + ChatColor.YELLOW + extangeAmount + " " + item.toString()
-					+ ChatColor.BLUE + " for $" + ChatColor.GREEN + sellCost + ChatColor.BLUE + ".");
+					+ ChatColor.BLUE + " for " + ChatColor.YELLOW + "$" + sellCost + ChatColor.BLUE + " plus town tax of " + ChatColor.YELLOW + "$" + taxToTown);
 			linkedChest.getInventory().addItem(new ItemStack(item, extangeAmount));
+			try {
+				Bukkit.getServer().getPlayer(DataManager.getInstance().getTownOwnerName(townId)).sendMessage(ChatColor.GREEN + "Recieved sign shop tax of " + ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format(taxToTown));
+				} catch(Exception e) {
+					
+				}
 			return true;
 		}
 		player.sendMessage(ChatColor.RED + "Insufficient Items or Shop has ran out of money.");
@@ -204,12 +218,25 @@ public class SignShop {
 			return false;
 		}
 		DataManager dm = DataManager.getInstance();
-		if (dm.getBalance(dm.getPlayerPrimaryAccount(player.getName())) >= buyCost && linkedChest.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
+		int townId = DataManager.getInstance().getTownByArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ());
+		if(townId == -1) {
+			player.sendMessage(ChatColor.RED + "You must be within a town to use a sign shop!");
+			return false;
+		}
+		double taxToTown = buyCost * dm.getTownShopTax(townId);
+		double totalBuyCost = buyCost + taxToTown;
+		if (dm.getBalance(dm.getPlayerPrimaryAccount(player.getName())) >= totalBuyCost && linkedChest.getInventory().containsAtLeast(new ItemStack(item), extangeAmount)) {
 			dm.makePayExchange(dm.getPlayerPrimaryAccount(player.getName()), accountNum, buyCost, "Sign Shop Purchase");
+			dm.makePayExchange(dm.getPlayerPrimaryAccount(player.getName()), dm.getPlayerPrimaryAccount(dm.getTownOwnerName(townId)), taxToTown, "Sign Shop Tax");
 			player.getInventory().addItem(new ItemStack(item, extangeAmount));
 			player.sendMessage(ChatColor.BLUE + "You bought " + ChatColor.YELLOW + extangeAmount + " " + item.toString()
-					+ ChatColor.BLUE + " for $" + ChatColor.GREEN + buyCost + ChatColor.BLUE + ".");
+					+ ChatColor.BLUE + " for " + ChatColor.YELLOW + "$" + buyCost + ChatColor.BLUE + " plus town tax of " + ChatColor.YELLOW + "$" + taxToTown);
 			linkedChest.getInventory().removeItem(new ItemStack(item, extangeAmount));
+			try {
+				Bukkit.getServer().getPlayer(DataManager.getInstance().getTownOwnerName(townId)).sendMessage(ChatColor.GREEN + "Recieved sign shop tax of " + ChatColor.YELLOW + "$" + new java.text.DecimalFormat("0.00").format(taxToTown));
+				} catch(Exception e) {
+					
+				}
 			return true;
 		}
 		player.sendMessage(ChatColor.RED + "Insufficient Funds or chest shop is out of stock.");
