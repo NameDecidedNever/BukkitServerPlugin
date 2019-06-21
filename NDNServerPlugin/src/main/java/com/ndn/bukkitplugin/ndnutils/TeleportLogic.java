@@ -20,7 +20,7 @@ public class TeleportLogic {
 			if (xDisplacment < MINIMUM_PROXIMITY && zDisplacment < MINIMUM_PROXIMITY) {
 				return 0;
 			} else {
-				return Math.round(100*(Math.sqrt(Math.pow(xDisplacment-MINIMUM_PROXIMITY, 2) + Math.pow(zDisplacment-MINIMUM_PROXIMITY, 2))*TELE_COSTPERBLOCK))/100;
+				return Math.round((Math.sqrt(Math.pow(xDisplacment-MINIMUM_PROXIMITY, 2) + Math.pow(zDisplacment-MINIMUM_PROXIMITY, 2))*TELE_COSTPERBLOCK));
 			}
 		} catch (Exception e) {
 			return -1;

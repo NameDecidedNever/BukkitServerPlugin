@@ -16,21 +16,12 @@ commands:
    spawn:
       description: Teleport to spawn for a high cost
       usage: /<command>
-   warp:
-      description: Teleport to a town
-      usage: /<command> [townName]
-   setwarp:
-      description: Teleport to a town
-      usage: /<command> [townName]
-   found:
-      description: Found your very own town from the position you are currently standing!
-      usage: /<command> [townName]
-   startplot:
-      description: Creates a plot within your town. The first corner will be set where you are at the time of calling this command. Call /finishplot to set the second location and add the plot to your town!
-      usage: /<command>
-   finishplot:
-      description: Finishes a plot started with /startplot
-      usage: /<command> [plotName] [plotType] [plotPricePerDay]
    firework:
       description: Create a random firework! (OPs only)
+      usage: /<command>
+   town:
+      description: Root command for town commands. Use /town help for more information.
+      usage: /<command> [parameters]
+   dbinfo:
+      description: Displays db connection info. Must be oped to use! Only for development purposes!
       usage: /<command>

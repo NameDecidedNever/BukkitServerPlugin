@@ -57,8 +57,9 @@ CREATE TABLE `towns` (
   `warpLocationX` int(11) NOT NULL,
   `warpLocationY` int(11) NOT NULL,
   `warpLocationZ` int(11) NOT NULL,
+  `allowResidentsToEditTown` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idtowns`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 CREATE TABLE `constants` (
   `name` varchar(64) NOT NULL,
   `value` double DEFAULT NULL,
@@ -86,6 +87,7 @@ CREATE TABLE `plots` (
   `type` int(11) DEFAULT NULL,
   `townid` int(11) DEFAULT NULL,
   `renterid` int(11) DEFAULT NULL,
+  `expenseid` int(11) DEFAULT NULL,
   PRIMARY KEY (`idplots`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
