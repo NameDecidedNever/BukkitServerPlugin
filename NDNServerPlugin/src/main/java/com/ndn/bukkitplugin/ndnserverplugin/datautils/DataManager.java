@@ -27,7 +27,7 @@ public class DataManager {
 
     // Misc Config
     static double PLAYER_DEFAULT_BALANCE = 200.0;
-    static double SERVER_DEFAULT_BALANCE = 4000.0;
+    static double SERVER_DEFAULT_BALANCE = 5000.0;
     static double ALL_DEFAULT_CREDIT = 100.0;
     static int STARTING_TOWN_RADIUS = 50;
 

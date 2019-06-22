@@ -90,6 +90,15 @@ CREATE TABLE `plots` (
   `expenseid` int(11) DEFAULT NULL,
   PRIMARY KEY (`idplots`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `pendingexpenses` (
+  `idexpenses` int(11) NOT NULL AUTO_INCREMENT,
+  `sender` int(11) NOT NULL,
+  `reciever` int(11) NOT NULL,
+  `amount` double NOT NULL,
+  `message` varchar(45) NOT NULL,
+  `expenseid` int(11) NOT NULL,
+  PRIMARY KEY (`idexpenses`)
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 
