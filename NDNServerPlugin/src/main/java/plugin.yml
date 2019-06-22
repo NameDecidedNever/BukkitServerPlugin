@@ -25,3 +25,6 @@ commands:
    dbinfo:
       description: Displays db connection info. Must be oped to use! Only for development purposes!
       usage: /<command>
+   signshop:
+      description: Displays sign shop help
+      usage: /<command>
