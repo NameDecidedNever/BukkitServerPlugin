@@ -24,6 +24,7 @@ import org.bukkit.loot.Lootable;
 import org.bukkit.plugin.Plugin;
 
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
+import com.ndn.bukkitplugin.ndnserverplugin.datautils.PlayerCombatPermissions;
 
 public class ProtectionListener implements Listener {
 

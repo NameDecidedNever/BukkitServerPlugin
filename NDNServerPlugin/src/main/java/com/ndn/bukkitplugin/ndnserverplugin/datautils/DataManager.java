@@ -35,6 +35,7 @@ public class DataManager {
     static final String SQL_ADD_PLAYER = "INSERT INTO `players` (accountid, hashword, isverified, username, verificationcode) VALUES (?, ?, ?, ?, ?)";
     static final String SQL_ADD_PLOT = "INSERT INTO `plots` (name, x, z, length, width, type, pricePerDay, townid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     static final String SQL_ADD_ACCOUNT = "INSERT INTO `accounts` (balance, credit, name) VALUES (?, ?, ?)";
+    static final String SQL_SELECT_PENDING_EXPENSES = "SELECT * FROM `pendingexpenses`";
     static final String SQL_SELECT_EXPENSES = "SELECT * FROM `expenses`";
     static final String SQL_SELECT_PLOT_BY_AREA = "SELECT * FROM `plots` WHERE ? > x AND ? < x + width AND ? > z AND ? < z + length";
     static final String SQL_SELECT_PLOT_BY_PLAYER_RESIDENTIAL = "SELECT * FROM `plots` WHERE renterid = ? AND type = 1";
@@ -53,6 +54,8 @@ public class DataManager {
     static final String SQL_UPDATE_BALANCE = "UPDATE `accounts` SET balance = ? WHERE idaccounts = ?";
     static final String SQL_INSERT_TRANSACTION = "INSERT INTO `transactions` (sender, reciever, amount, message, senderLabel, recieverLabel, time) VALUES (?, ?, ?, ?, ?, ?, ?)";
     static final String SQL_INSERT_ABOUT = "INSERT INTO `about` (currentPlayersOnline, maxPlayersOnline) VALUES (0, 0)";
+    static final String SQL_INSERT_PENDING_EXPENSES = "INSERT INTO `pendingexpenses` (sender, reciever, amount, message, expenseid) VALUES (?, ?, ?, ?, ?)";
+    static final String SQL_TRUNCATE_PENDING_EXPENSES = "TRUNCATE TABLE `pendingexpenses`";
     static final String SQL_UPDATE_ABOUT_PLAYERS = "UPDATE `about` SET currentPlayersOnline = ?";
     static final String SQL_UPDATE_ABOUT_PEAK_PLAYERS = "UPDATE `about` SET maxPlayersOnline = ?";
     static final String SQL_SELECT_ABOUT = "SELECT * FROM `about`";
@@ -140,14 +143,39 @@ public class DataManager {
 
     public void executeDailyExpenses() {
 	try {
-	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_EXPENSES);
+	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PENDING_EXPENSES);
 	    ResultSet rs = preparedStmt.executeQuery();
 	    while (rs.next()) {
 		DataManager.getInstance().makePayExchange(rs.getInt("sender"), rs.getInt("reciever"), rs.getDouble("amount"), rs.getString("message"));
 	    }
+	    PreparedStatement preparedStmt2 = conn.prepareStatement(SQL_SELECT_EXPENSES);
+	    ResultSet rs2 = preparedStmt2.executeQuery();
+	    PreparedStatement preparedStmt3 = conn.prepareStatement(SQL_TRUNCATE_PENDING_EXPENSES);
+	    preparedStmt3.execute();
+	    while (rs2.next()) {
+	    	 PreparedStatement preparedStmt4 = conn.prepareStatement(SQL_INSERT_PENDING_EXPENSES);
+	    	 preparedStmt4.setInt(1, rs2.getInt("sender"));
+	    	 preparedStmt4.setInt(2, rs2.getInt("reciever"));
+	    	 preparedStmt4.setDouble(3,  rs2.getDouble("amount"));
+	    	 preparedStmt4.setString(4, rs2.getString("message"));
+	    	 preparedStmt4.setInt(5, rs2.getInt("idexpenses"));
+	    	 preparedStmt4.executeUpdate();
+	    }
 	} catch (SQLException e) {
 	    handleSqlException(e);
 	}
+    }
+    
+    public String getTownMotd(int townId) {
+    	try {
+    	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
+    	    preparedStmt.setInt(1, townId);
+    	    ResultSet town = preparedStmt.executeQuery();
+    	    if (town.next()) { return town.getString("motd"); }
+    	} catch (SQLException e) {
+    	    handleSqlException(e);
+    	}
+    	return "";
     }
 
     public int getPlayerIdFromName(String name) {
