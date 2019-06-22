@@ -53,6 +53,7 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	getCommand("clearweather").setExecutor(spce);
 	getCommand("town").setExecutor(tce);
 	getCommand("dbinfo").setExecutor(dce);
+	getCommand("signshop").setExecutor(ssl);
 	getCommand("executeexpenses").setExecutor(dce);
 
 	recipieFurnace();

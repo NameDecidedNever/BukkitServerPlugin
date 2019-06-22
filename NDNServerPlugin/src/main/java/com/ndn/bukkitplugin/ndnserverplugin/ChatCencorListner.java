@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 
 public class ChatCencorListner implements Listener {
-    static String[] bannedList = { "nigger", "chink", "gouk", "towelhead", "jew", "negro", "beaner", "nigga" };
+    static String[] bannedList = { "nigger", "chink", "gouk", "towelhead", "negro", "beaner", "nigga" };
 
     Plugin plugin;
 

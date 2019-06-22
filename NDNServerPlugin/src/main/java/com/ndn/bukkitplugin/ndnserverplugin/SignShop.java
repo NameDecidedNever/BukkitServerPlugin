@@ -38,8 +38,8 @@ public class SignShop {
 		// getting account num
 		int accNum = -1;
 		if (Utils.isNumeric(ChatColor.stripColor(sign.getLine(0)))) {
-			throw new IllegalArgumentException("Account ID shop disabled.");
-			//accNum = Integer.parseInt(ChatColor.stripColor(sign.getLine(0)));
+			//throw new IllegalArgumentException("Account ID shop disabled.");
+			accNum = Integer.parseInt(ChatColor.stripColor(sign.getLine(0)));
 		} else {
 			accNum = DataManager.getInstance().getPlayerPrimaryAccount(ChatColor.stripColor(sign.getLine(0)));
 			if (accNum <= 0) {

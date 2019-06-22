@@ -2,6 +2,9 @@ package com.ndn.bukkitplugin.ndnserverplugin;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,7 +16,7 @@ import org.bukkit.plugin.Plugin;
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 import com.ndn.bukkitplugin.ndnutils.Utils;
 
-public class SignShopListner implements Listener {
+public class SignShopListner implements Listener, CommandExecutor {
 
 	Plugin plugin;
 
@@ -56,14 +59,19 @@ public class SignShopListner implements Listener {
 			if (DataManager.getInstance().getPlotEditableCode(event.getBlock().getX(), event.getBlock().getZ(), event.getPlayer().getName()) != 2) {
 				event.getPlayer().sendMessage(ChatColor.RED + "You can only create sign shops in market zoned plots!");
 				event.setCancelled(true);
-			} else if (!Utils.isNumeric(event.getLine(0)) && !event.getPlayer().getName().equals(event.getLine(0))) {
+			} else if ((!Utils.isNumeric(event.getLine(0)) && !event.getPlayer().getName().equals(event.getLine(0))) || DataManager.getInstance().getPlayerPrimaryAccount(event.getPlayer().getName()) != Double.parseDouble(event.getLine(0))) {
 				event.getPlayer().sendMessage(ChatColor.RED + "You can only use your name or an account number.");
-				;
 				event.setCancelled(true);
 			} else {
 				event.setLine(0, "§2" + event.getLine(0));
 			}
 		}
+	}
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		sender.sendMessage("SignShop help: https://github.com/NameDecidedNever/BukkitServerPlugin/wiki/SignShop-Tutorial");
+		return true;
 	}
 
 //	@EventHandler
