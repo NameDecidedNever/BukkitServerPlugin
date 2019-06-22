@@ -20,4 +20,13 @@ public class Utils {
 	}
 	return newArgs;
     }
+
+	public static int lowestFactor(int d) {
+		for(int i = d-1; i > 1; i--) {
+			if(d % i == 0) {
+				return i;
+			}
+		}
+		return d;
+	}
 }
