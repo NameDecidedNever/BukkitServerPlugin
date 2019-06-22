@@ -1,6 +1,8 @@
 package com.ndn.bukkitplugin.ndnserverplugin;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -18,6 +21,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
+import com.ndn.bukkitplugin.ndnserverplugin.datautils.PlayerCombatPermissions;
 
 public class NDNServerPlugin extends JavaPlugin implements Listener {
     MoneyCommandExecutor mce;
@@ -49,11 +53,19 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	getCommand("clearweather").setExecutor(spce);
 	getCommand("town").setExecutor(tce);
 	getCommand("dbinfo").setExecutor(dce);
+	getCommand("executeexpenses").setExecutor(dce);
 
 	recipieFurnace();
 
 	Bukkit.getServer().getPluginManager().registerEvents(new MobMoney(this), this);
 	Bukkit.getServer().getPluginManager().registerEvents(new AboutPageUpdater(), this);
+	
+	int minute = (int) 1200L;
+	this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+		public void run() {
+			Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Want to learn about the server? Visit ndnmc.com/blog/release");
+		}
+		}, 0L, minute * 30);
 
 	scheduleRepeatAtTime(this, new Runnable() {
 	    public void run() {
@@ -99,6 +111,20 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent evt) {
+    PlayerCombatPermissions.playerCombatPermissions.put(evt.getPlayer().getName(), new ArrayList<String>());
+	DataManager.getInstance().addPlayerIfNotExists(evt.getPlayer().getName());
+	if (!DataManager.getInstance().checkPlayerIsVerified(evt.getPlayer().getName())) {
+	    // Player is not verified, we need to give them a verification code.
+	    String prompt = ChatColor.GREEN + "Your Website Verification Code : ";
+	    String code = ChatColor.YELLOW + "" + DataManager.getInstance().getPlayerVerificationCode(evt.getPlayer().getName());
+	    evt.getPlayer().sendMessage(prompt + code);
+	    evt.getPlayer().sendMessage(ChatColor.GOLD + "Want to learn about the server? Visit ndnmc.com/blog/release");
+	}
+    }
+    
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent evt) {
+    PlayerCombatPermissions.playerCombatPermissions.remove(evt.getPlayer().getName());
 	DataManager.getInstance().addPlayerIfNotExists(evt.getPlayer().getName());
 	if (!DataManager.getInstance().checkPlayerIsVerified(evt.getPlayer().getName())) {
 	    // Player is not verified, we need to give them a verification code.

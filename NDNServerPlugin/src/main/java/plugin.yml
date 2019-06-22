@@ -25,3 +25,6 @@ commands:
    dbinfo:
       description: Displays db connection info. Must be oped to use! Only for development purposes!
       usage: /<command>
+   executeexpenses:
+      description: Executes daily expenses code that usually runs at midnight. Must be oped to use! Only for development purposes!
+      usage: /<command>

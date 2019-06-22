@@ -253,7 +253,7 @@ public class TownCommandExecutor implements CommandExecutor {
 					String message4 = ChatColor.YELLOW + "$"
 							+ new java.text.DecimalFormat("0.00").format(additionalCostToPlayer);
 					player.sendMessage(message1 + message2 + message3);
-					player.sendTitle(ChatColor.YELLOW + townName, ChatColor.GREEN + "example text", 5, 25, 5);
+					player.sendTitle(ChatColor.YELLOW + townName, ChatColor.GREEN + DataManager.getInstance().getTownMotd(townId), 5, 55, 5);
 					try {
 						plugin.getServer().getPlayer(DataManager.getInstance().getTownOwnerName(townId))
 								.sendMessage(ChatColor.GREEN + "Recieved town warp tax income " + message4);

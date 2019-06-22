@@ -2,6 +2,7 @@ package com.ndn.bukkitplugin.ndnserverplugin;
 
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -35,6 +36,9 @@ public class DebugCommandExecutor implements CommandExecutor {
 	        long minute = TimeUnit.SECONDS.toMinutes(secondsSinceStart) - (TimeUnit.SECONDS.toHours(secondsSinceStart)* 60);
 	        long second = TimeUnit.SECONDS.toSeconds(secondsSinceStart) - (TimeUnit.SECONDS.toMinutes(secondsSinceStart) *60);
 		sender.sendMessage(ChatColor.GREEN + "DB Connection Lifetime = " + ChatColor.YELLOW + day + " days, " + hours + "h" + minute + "m" + second + "s");
+	    }else if(command.getName().equals("executeexpenses")) {
+	    	Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "A server operator manually executed daily expenses. If this is not for testing, maybe start to panic!");
+	    	DataManager.getInstance().executeDailyExpenses();
 	    }
 	}else {
 	    sender.sendMessage(ChatColor.RED + "You must be oped in order to use debug commands!");
