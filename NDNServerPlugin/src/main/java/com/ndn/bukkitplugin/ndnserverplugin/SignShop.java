@@ -244,6 +244,14 @@ public class SignShop {
 
 	}
 
+	public double getBuyCost() {
+		return buyCost;
+	}
+
+	public double getSellCost() {
+		return sellCost;
+	}
+
 	public static boolean isSignShop(String[] lines) {
 
 		if (lines.length != 4) {
