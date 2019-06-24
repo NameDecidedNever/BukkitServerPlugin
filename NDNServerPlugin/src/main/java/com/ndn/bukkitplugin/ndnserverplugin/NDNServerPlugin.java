@@ -1,7 +1,9 @@
 package com.ndn.bukkitplugin.ndnserverplugin;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -31,6 +33,8 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
     ChatCencorListner ccl;
     TownCommandExecutor tce;
     DebugCommandExecutor dce;
+    
+    HashMap<String, Long> playerSecondsOnline = new HashMap<String, Long>();
 
     @Override
     public void onEnable() {
@@ -61,12 +65,11 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	Bukkit.getServer().getPluginManager().registerEvents(new MobMoney(this), this);
 	Bukkit.getServer().getPluginManager().registerEvents(new AboutPageUpdater(), this);
 	
-	int minute = (int) 1200L;
-	this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-		public void run() {
-			Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Want to learn about the server? Visit ndnmc.com/blog/release");
+	if(playerSecondsOnline.isEmpty()) {
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			playerSecondsOnline.put(p.getName(), Instant.now().getEpochSecond());
 		}
-		}, 0L, minute * 30);
+	}
 
 	scheduleRepeatAtTime(this, new Runnable() {
 	    public void run() {
@@ -114,6 +117,10 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent evt) {
     PlayerCombatPermissions.playerCombatPermissions.put(evt.getPlayer().getName(), new ArrayList<String>());
 	DataManager.getInstance().addPlayerIfNotExists(evt.getPlayer().getName());
+	if(playerSecondsOnline.containsKey(evt.getPlayer().getName())) {
+		playerSecondsOnline.remove(evt.getPlayer().getName());
+	}
+	playerSecondsOnline.put(evt.getPlayer().getName(), Instant.now().getEpochSecond());
 	if (!DataManager.getInstance().checkPlayerIsVerified(evt.getPlayer().getName())) {
 	    // Player is not verified, we need to give them a verification code.
 	    String prompt = ChatColor.GREEN + "Your Website Verification Code : ";
@@ -126,13 +133,8 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent evt) {
     PlayerCombatPermissions.playerCombatPermissions.remove(evt.getPlayer().getName());
-	DataManager.getInstance().addPlayerIfNotExists(evt.getPlayer().getName());
-	if (!DataManager.getInstance().checkPlayerIsVerified(evt.getPlayer().getName())) {
-	    // Player is not verified, we need to give them a verification code.
-	    String prompt = ChatColor.GREEN + "Your Website Verification Code : ";
-	    String code = ChatColor.YELLOW + "" + DataManager.getInstance().getPlayerVerificationCode(evt.getPlayer().getName());
-	    evt.getPlayer().sendMessage(prompt + code);
-	}
+	DataManager.getInstance().addPlayTimeSeconds((Instant.now().getEpochSecond()) - playerSecondsOnline.get(evt.getPlayer().getName()), evt.getPlayer().getName());
+	playerSecondsOnline.remove(evt.getPlayer().getName());
     }
 
     private void recipieFurnace() {

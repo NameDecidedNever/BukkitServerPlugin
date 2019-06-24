@@ -160,8 +160,75 @@ public class TownCommandExecutor implements CommandExecutor {
 		}
 		return true;
 	}
+	
+	private boolean plotAdd(CommandSender sender, Command command, String label, String[] args, Player player) {
+		if (args.length == 1) {
+			if (args[0].length() < 40) {
+				if (DataManager.getInstance().getPlotEditableCode(player.getLocation().getBlockX(), player.getLocation().getBlockZ(), player.getName()) == 1 ||
+						DataManager.getInstance().getPlotEditableCode(player.getLocation().getBlockX(), player.getLocation().getBlockZ(), player.getName()) == 2) {
+						int plotId = DataManager.getInstance().getPlotId(player.getLocation().getBlockX(), player.getLocation().getBlockZ());
+						if(plotId != -1) {
+						DataManager.getInstance().addPlotPermission(plotId, args[0]);
+						String messagePart1 = ChatColor.GREEN + "Successfully added ";
+						String messagePart2 = ChatColor.BLUE + "\"" + args[0] + "\"";
+						String messagePart3 = ChatColor.GREEN
+								+ " to your plot!";
+						player.sendMessage(messagePart1 + messagePart2 + messagePart3);
+						return true;
+						}else {
+							player.sendMessage(ChatColor.RED
+									+ "Please stand within the plot and try again!");
+				
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "You do not have permissions for adding people to this plot!");
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED
+						+ "Does the person you're going to add really have a name longer than 40 characters? If so contact Matthew about manually adding him / her!");
+			}
+		} else {
+			player.sendMessage(ChatColor.RED
+					+ "Make sure to include the correct parameters when you use this command. See the help menu for details, and try again!");
+		}
+		return true;
+	}
+	
+	private boolean plotRemove(CommandSender sender, Command command, String label, String[] args, Player player) {
+		if (args.length == 1) {
+			if (args[0].length() < 40) {
+				if (DataManager.getInstance().getPlotEditableCode(player.getLocation().getBlockX(), player.getLocation().getBlockZ(), player.getName()) == 1 ||
+						DataManager.getInstance().getPlotEditableCode(player.getLocation().getBlockX(), player.getLocation().getBlockZ(), player.getName()) == 2) {
+						int plotId = DataManager.getInstance().getPlotId(player.getLocation().getBlockX(), player.getLocation().getBlockZ());
+						if(plotId != -1) {
+						DataManager.getInstance().removePlotPermission(plotId, args[0]);
+						String messagePart1 = ChatColor.GREEN + "Successfully REMOVED ";
+						String messagePart2 = ChatColor.BLUE + "\"" + args[0] + "\"";
+						String messagePart3 = ChatColor.GREEN
+								+ " to your plot!";
+						player.sendMessage(messagePart1 + messagePart2 + messagePart3);
+						return true;
+						}else {
+							player.sendMessage(ChatColor.RED
+									+ "Please stand within the plot and try again!");
+				
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "You do not have permissions for removing people from this plot!");
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED
+						+ "Does the person you're going to add really have a name longer than 40 characters? If so contact Matthew about manually removing him / her!");
+			}
+		} else {
+			player.sendMessage(ChatColor.RED
+					+ "Make sure to include the correct parameters when you use this command. See the help menu for details, and try again!");
+		}
+		return true;
+	}
 
 	private boolean setWarp(CommandSender sender, Command command, String label, String[] args, Player player) {
+		if (player.getLocation().getWorld() == Bukkit.getWorld("world")) {
 		if (DataManager.getInstance().getTownIdFromOwnerName(player.getName()) == DataManager.getInstance()
 				.getTownByArea(player.getLocation().getBlockX(), player.getLocation().getBlockZ())) {
 			DataManager.getInstance().setTownWarpLocation(player.getLocation(), DataManager.getInstance()
@@ -170,6 +237,9 @@ public class TownCommandExecutor implements CommandExecutor {
 					+ "Successfully moved the warp location for your town! Players will now warp here.");
 		} else {
 			sender.sendMessage(ChatColor.RED + "You can only edit the warp location within your own town!");
+		}
+		} else {
+			sender.sendMessage(ChatColor.RED + "You can only set the warp location in the overworld!");
 		}
 		return true;
 	}
@@ -228,6 +298,7 @@ public class TownCommandExecutor implements CommandExecutor {
 
 
 	private boolean warp(CommandSender sender, Command command, String label, String[] args, Player player) {
+		if (player.getLocation().getWorld() == Bukkit.getWorld("world")) {
 		if (args.length == 1) {
 			String townName = args[0];
 			int townId = DataManager.getInstance().getTownIdFromName(townName);
@@ -269,6 +340,9 @@ public class TownCommandExecutor implements CommandExecutor {
 		} else {
 			player.sendMessage(ChatColor.RED + "Please provide the name of the warp! See the help menu for details.");
 		}
+		} else {
+			player.sendMessage(ChatColor.RED + "You cannot warp unless you are in the overworld!");
+		}
 		return true;
 	}
 
@@ -292,6 +366,10 @@ public class TownCommandExecutor implements CommandExecutor {
 					return finishPlot(sender, command, label, Utils.shiftArgs(2, args), player);
 				} else if (args[1].equalsIgnoreCase("view")) {
 					return viewplot(sender, command, label, Utils.shiftArgs(2, args), player);
+				} else if(args[1].equals("add")) {
+					return plotAdd(sender, command, label, Utils.shiftArgs(2, args), player);
+				}else if(args[1].equals("remove")) {
+					return plotRemove(sender, command, label, Utils.shiftArgs(2, args), player);
 				}
 			} else if (args[0].equalsIgnoreCase("setwarp")) {
 				return setWarp(sender, command, label, Utils.shiftArgs(1, args), player);
