@@ -14,8 +14,9 @@ CREATE TABLE `players` (
   `verificationcode` varchar(45) NOT NULL,
   `isverified` int(11) NOT NULL DEFAULT '0',
   `accountid` int(11) DEFAULT NULL,
+  `secondsPlayed` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idplayers`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 CREATE TABLE `transactions` (
   `idtransactions` int(11) NOT NULL AUTO_INCREMENT,
   `sender` int(11) NOT NULL,
@@ -100,7 +101,12 @@ CREATE TABLE `pendingexpenses` (
   `expenseid` int(11) NOT NULL,
   PRIMARY KEY (`idexpenses`)
 ) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+CREATE TABLE `plotpermissionsmap` (
+  `idplotpermissionsmap` int(11) NOT NULL AUTO_INCREMENT,
+  `plotid` int(11) NOT NULL,
+  `playerName` varchar(45) NOT NULL,
+  PRIMARY KEY (`idplotpermissionsmap`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 

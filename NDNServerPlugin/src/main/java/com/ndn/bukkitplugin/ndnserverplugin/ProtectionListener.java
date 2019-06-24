@@ -1,11 +1,16 @@
 package com.ndn.bukkitplugin.ndnserverplugin;
 
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.type.Door;
+import org.bukkit.block.data.type.Furnace;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -41,24 +46,29 @@ public class ProtectionListener implements Listener {
 		
 		@EventHandler
 		public void onBlockBreak(BlockBreakEvent event){
+			if (event.getPlayer().getLocation().getWorld() == Bukkit.getWorld("world")) {
 			int editCode = DataManager.getInstance().getPlotEditableCode(event.getBlock().getX(), event.getBlock().getZ(), event.getPlayer().getName());
 			if(editCode == 0){
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED + "Cannot edit this area!");
+			}
 			}
 		}
 		
 		@EventHandler
 		public void onBlockPlace(BlockPlaceEvent event){
+			if (event.getPlayer().getLocation().getWorld() == Bukkit.getWorld("world")) {
 			int editCode = DataManager.getInstance().getPlotEditableCode(event.getBlock().getX(), event.getBlock().getZ(), event.getPlayer().getName());
 			if(editCode == 0){
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED + "Cannot edit this area!");
 			}
+			}
 		}
 		
 		  @EventHandler
 		    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
+			  if (event.getDamager().getLocation().getWorld() == Bukkit.getWorld("world")) {
 			  	if(event.getDamager() instanceof Player) {
 			  		if(!(event.getEntity() instanceof Monster)) {
 			  		String playerName = ((Player) event.getDamager()).getName();
@@ -68,18 +78,21 @@ public class ProtectionListener implements Listener {
 		    		}
 			  		}
 			  	}
+			  	}
 		    }
 		
 	    @EventHandler
 	    public void onPlayerInteractEvent(PlayerInteractEvent event){
 	    	if(!(event == null)) {
+	    		if (event.getPlayer().getLocation().getWorld() == Bukkit.getWorld("world")) {
 	    		if(event.getClickedBlock() != null) {
 	    		int editCode = DataManager.getInstance().getPlotEditableCode(event.getClickedBlock().getX(), event.getClickedBlock().getZ(), event.getPlayer().getName());
 	    		if(editCode == 0) {
-	    			if(!(event.getClickedBlock().getState() instanceof Sign) && event.getClickedBlock().getState() instanceof Lootable || (event.getItem() != null && (event.getItem().getType() == Material.ITEM_FRAME || event.getItem().getType() == Material.ARMOR_STAND || event.getItem().getType() == Material.TNT_MINECART))) {
+	    			if(!(event.getClickedBlock().getState() instanceof Sign) && (event.getClickedBlock().getState() instanceof Lootable || event.getClickedBlock().getType() == Material.OAK_DOOR || event.getClickedBlock().getBlockData() instanceof Furnace) || (event.getItem() != null && (event.getItem().getType() == Material.ITEM_FRAME || event.getItem().getType() == Material.ARMOR_STAND || event.getItem().getType() == Material.TNT_MINECART))) {
 	    				event.setCancelled(true);
 	    				event.getPlayer().sendMessage(ChatColor.RED + "Cannot interact in this area!");
 	    			}
+	    		}
 	    		}
 	    		}
 	    		}
@@ -87,6 +100,7 @@ public class ProtectionListener implements Listener {
 		
 		@EventHandler
 		public void onEntityExplode(EntityExplodeEvent event){
+			if (event.getEntity().getLocation().getWorld() == Bukkit.getWorld("world")) {
 			boolean shouldCancel = false;
 			for(Block b : event.blockList()) {
 				if(DataManager.getInstance().getPlotEditableCode(b.getX(), b.getZ(), "") == 0) {
@@ -95,6 +109,7 @@ public class ProtectionListener implements Listener {
 			}
 			if(shouldCancel) {
 				event.setCancelled(true);
+			}
 			}
 		}
 	}

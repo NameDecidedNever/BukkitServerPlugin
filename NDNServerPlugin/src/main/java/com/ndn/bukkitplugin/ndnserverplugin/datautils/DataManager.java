@@ -54,8 +54,12 @@ public class DataManager {
     static final String SQL_UPDATE_BALANCE = "UPDATE `accounts` SET balance = ? WHERE idaccounts = ?";
     static final String SQL_INSERT_TRANSACTION = "INSERT INTO `transactions` (sender, reciever, amount, message, senderLabel, recieverLabel, time) VALUES (?, ?, ?, ?, ?, ?, ?)";
     static final String SQL_INSERT_ABOUT = "INSERT INTO `about` (currentPlayersOnline, maxPlayersOnline) VALUES (0, 0)";
+    static final String SQL_DELETE_PLOT_PERMISSION = "DELETE FROM `plotpermissionsmap` WHERE plotid = ? AND playerName = ?";
+    static final String SQL_INSERT_PLOT_PERMISSION = "INSERT INTO `plotpermissionsmap` (plotid, playerName) VALUES (?, ?)";
+    static final String SQL_SELECT_PLOT_PERMISSION = "SELECT * FROM `plotpermissionsmap` WHERE plotid = ? AND playerName = ?";
     static final String SQL_INSERT_PENDING_EXPENSES = "INSERT INTO `pendingexpenses` (sender, reciever, amount, message, expenseid) VALUES (?, ?, ?, ?, ?)";
     static final String SQL_TRUNCATE_PENDING_EXPENSES = "TRUNCATE TABLE `pendingexpenses`";
+    static final String SQL_UPDATE_PLAYERS_PLAYTIME = "UPDATE `players` SET secondsPlayed = secondsPlayed + ? WHERE username = ?";
     static final String SQL_UPDATE_ABOUT_PLAYERS = "UPDATE `about` SET currentPlayersOnline = ?";
     static final String SQL_UPDATE_ABOUT_PEAK_PLAYERS = "UPDATE `about` SET maxPlayersOnline = ?";
     static final String SQL_SELECT_ABOUT = "SELECT * FROM `about`";
@@ -127,6 +131,40 @@ public class DataManager {
 	    handleSqlException(e);
 	}
 	return false;
+    }
+    
+    public void addPlotPermission(int plotid, String username) {
+    	try {
+    	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_INSERT_PLOT_PERMISSION);
+    	    preparedStmt.setInt(1, plotid);
+    	    preparedStmt.setString(2, username);
+    	    preparedStmt.executeUpdate();
+    	} catch (SQLException e) {
+    	    handleSqlException(e);
+    	}
+    }
+    
+    public void removePlotPermission(int plotid, String username) {
+    	try {
+    	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_DELETE_PLOT_PERMISSION);
+    	    preparedStmt.setInt(1, plotid);
+    	    preparedStmt.setString(2, username);
+    	    preparedStmt.executeUpdate();
+    	} catch (SQLException e) {
+    	    handleSqlException(e);
+    	}
+    }
+    
+    public void addPlayTimeSeconds(long l, String username) {
+    	int secondsToAdd = Math.toIntExact(l);
+    	try {
+    	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_UPDATE_PLAYERS_PLAYTIME);
+    	    preparedStmt.setInt(1, secondsToAdd);
+    	    preparedStmt.setString(2, username);
+    	    preparedStmt.executeUpdate();
+    	} catch (SQLException e) {
+    	    handleSqlException(e);
+    	}
     }
 
     public String getPlayerNameFromId(int id) {
@@ -323,6 +361,22 @@ public class DataManager {
 	}
 	return null;
     }
+    
+    public int getPlotId(int x, int z) {
+
+	try {
+	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLOT_BY_AREA);
+	    preparedStmt.setInt(1, x);
+	    preparedStmt.setInt(2, x);
+	    preparedStmt.setInt(3, z);
+	    preparedStmt.setInt(4, z);
+	    ResultSet plot = preparedStmt.executeQuery();
+	    if (plot.next()) { return plot.getInt("idplots"); }
+	} catch (SQLException e) {
+	    handleSqlException(e);
+	}
+	return -1;
+    }
 
     public int getPlotType(int x, int z) {
 	int townId = -1;
@@ -388,7 +442,15 @@ public class DataManager {
 		if (plot.getInt("renterid") == (DataManager.getInstance().getPlayerIdFromName(username))) {
 		    return plot.getInt("type");
 		} else {
-		    return 0;
+			PreparedStatement preparedStmt2 = conn.prepareStatement(SQL_SELECT_PLOT_PERMISSION);
+			preparedStmt2.setInt(1, plot.getInt("idplots"));
+			preparedStmt2.setString(2, username);
+			ResultSet perms = preparedStmt2.executeQuery();
+			if(perms.next()) {
+				return plot.getInt("type");
+			}else {
+				return 0;
+			}
 		}
 	    } else if (townId != -1) {
 		if (isTownOwner || (residentsCanEdit && (DataManager.getInstance().getPlayerTownAffiliation(username) == townId))) {

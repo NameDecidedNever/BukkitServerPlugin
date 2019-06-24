@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -39,12 +40,14 @@ public class MobMoney implements Listener {
 			}
 
 			// check if player has killed in under 20 blocks
-			if (player.getLocation().distance(playerLastKillLocations.get(player.getName()).getLoc()) < 20) {
+			
+			if (player.getLocation().getWorld() == playerLastKillLocations.get(player.getName()).getLoc().getWorld() && player.getLocation().distance(playerLastKillLocations.get(player.getName()).getLoc()) < 20) {
 				playerLastKillLocations.get(player.getName())
 						.setKills(playerLastKillLocations.get(player.getName()).getKills() + 1);
 			} else {
 				playerLastKillLocations.get(player.getName()).setKills(0);
 			}
+			
 			
 			//set players location
 			playerLastKillLocations.get(player.getName()).setLoc(player.getLocation());
