@@ -38,9 +38,17 @@ public class SignShopListner implements Listener, CommandExecutor {
 					try {
 						SignShop signShop = SignShop.makeSignShopFromSign(sign, SignShop.getChestFromSign(sign));
 						if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-							signShop.buy(player);
+							if(signShop.buy(player)) {
+								if(plugin.getServer().getPlayer(sign.getLine(0)) != null) {
+									plugin.getServer().getPlayer(sign.getLine(0)).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.BLUE + " purchased " + ChatColor.YELLOW + sign.getLine(1) + ChatColor.BLUE + " for" + ChatColor.GREEN + " $" + signShop.getBuyCost());
+								}
+							}
 						} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-							signShop.sell(player);
+							if(signShop.sell(player)) {
+								if(plugin.getServer().getPlayer(sign.getLine(0)) != null) {
+									plugin.getServer().getPlayer(sign.getLine(0)).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.BLUE + " sold " + ChatColor.YELLOW + sign.getLine(1) + ChatColor.BLUE + " for" + ChatColor.GREEN + " $" + signShop.getBuyCost());
+								}
+							}
 						}
 					} catch (Exception e) {
 						player.sendMessage(e.getMessage());

@@ -28,74 +28,84 @@ import com.ndn.bukkitplugin.ndnserverplugin.datautils.PlayerCombatPermissions;
 
 public class ProtectionListener implements Listener {
 
-		Plugin plugin;
+	Plugin plugin;
 
-		public ProtectionListener(Plugin plugin) {
-			this.plugin = plugin;
+	public ProtectionListener(Plugin plugin) {
+		this.plugin = plugin;
+	}
+
+	// -1 = No plot can edit
+	// 0 = Can't edit
+	// 1 = Can Edit Residential
+	// 2 = Can Edit Market
+
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event) {
+		int editCode = DataManager.getInstance().getPlotEditableCode(event.getBlock().getX(), event.getBlock().getZ(),
+				event.getPlayer().getName());
+		if (editCode == 0) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(ChatColor.RED + "Cannot edit this area!");
 		}
-		
-		//-1 = No plot can edit
-		//0 = Can't edit
-		//1 = Can Edit Residential
-		//2 = Can Edit Market
-		
-		@EventHandler
-		public void onBlockBreak(BlockBreakEvent event){
-			int editCode = DataManager.getInstance().getPlotEditableCode(event.getBlock().getX(), event.getBlock().getZ(), event.getPlayer().getName());
-			if(editCode == 0){
-				event.setCancelled(true);
-				event.getPlayer().sendMessage(ChatColor.RED + "Cannot edit this area!");
-			}
+	}
+
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent event) {
+		int editCode = DataManager.getInstance().getPlotEditableCode(event.getBlock().getX(), event.getBlock().getZ(),
+				event.getPlayer().getName());
+		if (editCode == 0) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(ChatColor.RED + "Cannot edit this area!");
 		}
-		
-		@EventHandler
-		public void onBlockPlace(BlockPlaceEvent event){
-			int editCode = DataManager.getInstance().getPlotEditableCode(event.getBlock().getX(), event.getBlock().getZ(), event.getPlayer().getName());
-			if(editCode == 0){
-				event.setCancelled(true);
-				event.getPlayer().sendMessage(ChatColor.RED + "Cannot edit this area!");
-			}
-		}
-		
-		  @EventHandler
-		    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
-			  	if(event.getDamager() instanceof Player) {
-			  		if(!(event.getEntity() instanceof Monster)) {
-			  		String playerName = ((Player) event.getDamager()).getName();
-		    		int editCode = DataManager.getInstance().getPlotEditableCode((int) event.getEntity().getLocation().getX(), (int) event.getEntity().getLocation().getZ(), playerName);
-		    		if(editCode == 0) {
-		    			event.setCancelled(true);
-		    		}
-			  		}
-			  	}
-		    }
-		
-	    @EventHandler
-	    public void onPlayerInteractEvent(PlayerInteractEvent event){
-	    	if(!(event == null)) {
-	    		if(event.getClickedBlock() != null) {
-	    		int editCode = DataManager.getInstance().getPlotEditableCode(event.getClickedBlock().getX(), event.getClickedBlock().getZ(), event.getPlayer().getName());
-	    		if(editCode == 0) {
-	    			if(!(event.getClickedBlock().getState() instanceof Sign) && event.getClickedBlock().getState() instanceof Lootable || (event.getItem() != null && (event.getItem().getType() == Material.ITEM_FRAME || event.getItem().getType() == Material.ARMOR_STAND || event.getItem().getType() == Material.TNT_MINECART))) {
-	    				event.setCancelled(true);
-	    				event.getPlayer().sendMessage(ChatColor.RED + "Cannot interact in this area!");
-	    			}
-	    		}
-	    		}
-	    		}
-	    	}
-		
-		@EventHandler
-		public void onEntityExplode(EntityExplodeEvent event){
-			boolean shouldCancel = false;
-			for(Block b : event.blockList()) {
-				if(DataManager.getInstance().getPlotEditableCode(b.getX(), b.getZ(), "") == 0) {
-					shouldCancel = true;
+	}
+
+	@EventHandler
+	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+		if (event.getDamager() instanceof Player) {
+			if (!(event.getEntity() instanceof Monster)) {
+				String playerName = ((Player) event.getDamager()).getName();
+				int editCode = DataManager.getInstance().getPlotEditableCode(
+						(int) event.getEntity().getLocation().getX(), (int) event.getEntity().getLocation().getZ(),
+						playerName);
+				if (editCode == 0) {
+					event.setCancelled(true);
 				}
-			}
-			if(shouldCancel) {
-				event.setCancelled(true);
 			}
 		}
 	}
 
+	@EventHandler
+	public void onPlayerInteractEvent(PlayerInteractEvent event) {
+		if (!(event == null)) {
+			if (event.getClickedBlock() != null) {
+				int editCode = DataManager.getInstance().getPlotEditableCode(event.getClickedBlock().getX(),
+						event.getClickedBlock().getZ(), event.getPlayer().getName());
+				if (editCode == 0) {
+					if (!(event.getClickedBlock().getState() instanceof Sign)
+							&& event.getClickedBlock().getState() instanceof Lootable
+							|| (event.getItem() != null && (event.getItem().getType() != null
+									&& (event.getItem().getType().toString().toUpperCase().contains("BUCKET")
+											|| event.getItem().getType() == Material.END_CRYSTAL
+											|| event.getItem().getType() == Material.FIRE_CHARGE
+											|| event.getItem().getType() == Material.FLINT_AND_STEEL)))) {
+						event.setCancelled(true);
+						event.getPlayer().sendMessage(ChatColor.RED + "Cannot interact in this area!");
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onEntityExplode(EntityExplodeEvent event) {
+		boolean shouldCancel = false;
+		for (Block b : event.blockList()) {
+			if (DataManager.getInstance().getPlotEditableCode(b.getX(), b.getZ(), "") == 0) {
+				shouldCancel = true;
+			}
+		}
+		if (shouldCancel) {
+			event.setCancelled(true);
+		}
+	}
+}
