@@ -71,7 +71,7 @@ public class SignShopListner implements Listener, CommandExecutor {
 				event.getPlayer().sendMessage(ChatColor.RED + "You can only use your name or an account number.");
 				event.setCancelled(true);
 			} else {
-				event.setLine(0, "§2" + event.getLine(0));
+				event.getPlayer().sendMessage("Sign Shop sucessfully created!");
 			}
 		}
 	}
