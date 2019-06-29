@@ -60,8 +60,9 @@ CREATE TABLE `towns` (
   `warpLocationZ` int(11) NOT NULL,
   `allowResidentsToEditTown` int(11) NOT NULL DEFAULT '0',
   `motd` varchar(45) NOT NULL DEFAULT 'A cool town!',
+  `isQuestTown` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idtowns`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 CREATE TABLE `constants` (
   `name` varchar(64) NOT NULL,
   `value` double DEFAULT NULL,
@@ -107,6 +108,11 @@ CREATE TABLE `plotpermissionsmap` (
   `playerName` varchar(45) NOT NULL,
   PRIMARY KEY (`idplotpermissionsmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+CREATE TABLE `questprogress` (
+  `idquestprogress` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(45) DEFAULT NULL,
+  `progress` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idquestprogress`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
