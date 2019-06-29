@@ -59,6 +59,9 @@ public class MobMoney implements Listener {
 				int townId = DataManager.getInstance().getTownByArea(player.getLocation().getBlockX(),
 						player.getLocation().getBlockZ());
 				if (townId != -1) {
+					if(DataManager.getInstance().isQuestTown(townId)){
+						townId = -1;
+					}
 					fractionToTownOwner = DataManager.getInstance().getTownMobTax(townId);
 				}
 				double serverBalance = DataManager.getInstance()

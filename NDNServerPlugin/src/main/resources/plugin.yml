@@ -1,0 +1,5 @@
+name: ActionBarAPI
+description: ActionBarAPI
+main: com.connorlinfoot.actionbarapi.ActionBarAPI
+version: ${project.version}
+api-version: 1.13

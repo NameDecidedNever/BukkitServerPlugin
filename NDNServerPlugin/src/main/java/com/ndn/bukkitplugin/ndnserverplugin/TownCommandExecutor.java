@@ -148,11 +148,11 @@ public class TownCommandExecutor implements CommandExecutor {
 						return true;
 					}
 				} else {
-					sender.sendMessage(ChatColor.RED + "Plot name is too long. Try something less than 40 characters!");
+					sender.sendMessage(ChatColor.RED
+							+ "You can only place plots within your town. Try calling finishplot again but make sure it is within your town borders!");
 				}
 			} else {
-				sender.sendMessage(ChatColor.RED
-						+ "You can only place plots within your town. Try calling finishplot again but make sure it is within your town borders!");
+				sender.sendMessage(ChatColor.RED + "Plot name is too long. Try something less than 40 characters!");
 			}
 		} else {
 			player.sendMessage(ChatColor.RED
@@ -308,13 +308,13 @@ public class TownCommandExecutor implements CommandExecutor {
 				double additionalCostToPlayer = costToWarp * DataManager.getInstance().getTownWarpTax(townId);
 				double totalCostToPlayer = costToWarp + additionalCostToPlayer;
 				if (DataManager.getInstance().getPlayerBalance(player.getName()) >= totalCostToPlayer) {
+					
 					DataManager.getInstance().makePayExchange(
 							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()),
 							DataManager.getInstance().getServerPrimaryAccount(), costToWarp, "Warp To " + townName);
 					DataManager.getInstance().makePayExchange(
 							DataManager.getInstance().getPlayerPrimaryAccount(player.getName()),
-							DataManager.getInstance()
-									.getPlayerPrimaryAccount(DataManager.getInstance().getTownOwnerName(townId)),
+							DataManager.getInstance().getTownOwnerAccountId(townId),
 							additionalCostToPlayer, "Warp Tax for " + townName);
 					player.teleport(DataManager.getInstance().getTownWarpLocation(townId));
 					String message1 = ChatColor.GREEN + "Paid ";
@@ -324,6 +324,7 @@ public class TownCommandExecutor implements CommandExecutor {
 					String message4 = ChatColor.YELLOW + "$"
 							+ new java.text.DecimalFormat("0.00").format(additionalCostToPlayer);
 					player.sendMessage(message1 + message2 + message3);
+				
 					player.sendTitle(ChatColor.YELLOW + townName, ChatColor.GREEN + DataManager.getInstance().getTownMotd(townId), 5, 55, 5);
 					try {
 						plugin.getServer().getPlayer(DataManager.getInstance().getTownOwnerName(townId))

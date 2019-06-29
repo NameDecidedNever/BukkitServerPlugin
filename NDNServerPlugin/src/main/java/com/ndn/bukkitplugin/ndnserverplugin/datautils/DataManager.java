@@ -54,6 +54,9 @@ public class DataManager {
     static final String SQL_UPDATE_BALANCE = "UPDATE `accounts` SET balance = ? WHERE idaccounts = ?";
     static final String SQL_INSERT_TRANSACTION = "INSERT INTO `transactions` (sender, reciever, amount, message, senderLabel, recieverLabel, time) VALUES (?, ?, ?, ?, ?, ?, ?)";
     static final String SQL_INSERT_ABOUT = "INSERT INTO `about` (currentPlayersOnline, maxPlayersOnline) VALUES (0, 0)";
+    static final String SQL_SELECT_QUEST_PROGRESS_BY_USERNAME = "SELECT * FROM `questprogress` WHERE username = ?";
+    static final String SQL_INSERT_QUEST_PROGRESS = "INSERT INTO `questprogress` (username, progress) VALUES (?, ?)";
+    static final String SQL_UPDATE_QUEST_PROGRESS_BY_USERNAME = "UPDATE `questprogress` SET progress = ? WHERE username = ?";
     static final String SQL_DELETE_PLOT_PERMISSION = "DELETE FROM `plotpermissionsmap` WHERE plotid = ? AND playerName = ?";
     static final String SQL_INSERT_PLOT_PERMISSION = "INSERT INTO `plotpermissionsmap` (plotid, playerName) VALUES (?, ?)";
     static final String SQL_SELECT_PLOT_PERMISSION = "SELECT * FROM `plotpermissionsmap` WHERE plotid = ? AND playerName = ?";
@@ -131,6 +134,52 @@ public class DataManager {
 	    handleSqlException(e);
 	}
 	return false;
+    }
+    
+    public boolean isQuestTown(int townId) {
+    	try {
+    	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
+    	    preparedStmt.setInt(1, townId);
+    	    ResultSet town = preparedStmt.executeQuery();
+    	    if (town.next()) { return (town.getInt("isQuestTown") == 1); }
+    	} catch (SQLException e) {
+    	    handleSqlException(e);
+    	}
+    	return false;
+    }
+    
+    public int getQuestProgress(String username) {
+    	try {
+    	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_QUEST_PROGRESS_BY_USERNAME);
+    	    preparedStmt.setString(1, username);
+    	    ResultSet qProgress = preparedStmt.executeQuery();
+    	    if (qProgress.next()) { return qProgress.getInt("progress"); }
+    	} catch (SQLException e) {
+    	    handleSqlException(e);
+    	}
+    	return 0;
+    }
+    
+    public int setQuestProgress(String username, int progress) {
+    	try {
+    	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_QUEST_PROGRESS_BY_USERNAME);
+    	    preparedStmt.setString(1, username);
+    	    ResultSet qProgress = preparedStmt.executeQuery();
+    	    if (!qProgress.next()) {
+    	    	 PreparedStatement preparedStmt2 = conn.prepareStatement(SQL_INSERT_QUEST_PROGRESS);
+    	    	 preparedStmt2.setString(1, username);
+    	    	 preparedStmt2.setInt(2, progress);
+    	    	 preparedStmt2.executeUpdate();
+    	    }else {
+    	    	PreparedStatement preparedStmt3 = conn.prepareStatement(SQL_UPDATE_QUEST_PROGRESS_BY_USERNAME);
+	   	    	 preparedStmt3.setInt(1, progress);
+	   	    	 preparedStmt3.setString(2, username);
+	   	    	 preparedStmt3.executeUpdate();
+    	    }
+    	} catch (SQLException e) {
+    	    handleSqlException(e);
+    	}
+    	return 0;
     }
     
     public void addPlotPermission(int plotid, String username) {
@@ -253,6 +302,18 @@ public class DataManager {
 	}
 	return "";
     }
+    
+    public int getTownOwnerAccountId(int townid) {
+    	try {
+    	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_TOWN_BY_ID);
+    	    preparedStmt.setInt(1, townid);
+    	    ResultSet town = preparedStmt.executeQuery();
+    	    if (town.next()) { return town.getInt("ownerAccountId"); }
+    	} catch (SQLException e) {
+    	    handleSqlException(e);
+    	}
+    	return -1;
+        }
 
     public double getTownMobTax(int id) {
 	try {
@@ -430,6 +491,14 @@ public class DataManager {
 	} catch (SQLException e) {
 	    handleSqlException(e);
 
+	}
+	if(townId != -1) {
+		if(DataManager.getInstance().isQuestTown(townId)) {
+			if(Bukkit.getPlayer(username).isOp()) {
+				return -1;
+			}
+			return 3;
+		}
 	}
 	try {
 	    PreparedStatement preparedStmt = conn.prepareStatement(SQL_SELECT_PLOT_BY_AREA);

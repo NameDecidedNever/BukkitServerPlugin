@@ -30,3 +30,9 @@ commands:
    executeexpenses:
       description: Executes daily expenses code that usually runs at midnight. Must be oped to use! Only for development purposes!
       usage: /<command>
+   quest:
+      description: Home of all the quest commands!
+      usage: /<command>
+   zombiepatrol:
+      description: Testing command. Do not use!
+      usage: /<commad>

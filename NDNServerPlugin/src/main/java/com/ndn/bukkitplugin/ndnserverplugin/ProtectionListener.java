@@ -54,7 +54,7 @@ public class ProtectionListener implements Listener {
 		if (event.getPlayer().getLocation().getWorld() == Bukkit.getWorld("world")) {
 			int editCode = DataManager.getInstance().getPlotEditableCode(event.getBlock().getX(),
 					event.getBlock().getZ(), event.getPlayer().getName());
-			if (editCode == 0) {
+			if (editCode == 0  || editCode == 3) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED + "Cannot edit this area!");
 			}
@@ -66,7 +66,7 @@ public class ProtectionListener implements Listener {
 		if (event.getPlayer().getLocation().getWorld() == Bukkit.getWorld("world")) {
 			int editCode = DataManager.getInstance().getPlotEditableCode(event.getBlock().getX(),
 					event.getBlock().getZ(), event.getPlayer().getName());
-			if (editCode == 0) {
+			if (editCode == 0 || editCode == 3) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED + "Cannot edit this area!");
 			}
@@ -82,7 +82,7 @@ public class ProtectionListener implements Listener {
 					int editCode = DataManager.getInstance().getPlotEditableCode(
 							(int) event.getEntity().getLocation().getX(), (int) event.getEntity().getLocation().getZ(),
 							playerName);
-					if (editCode == 0) {
+					if (editCode == 0  || editCode == 3) {
 						event.setCancelled(true);
 					}
 				}
@@ -97,9 +97,9 @@ public class ProtectionListener implements Listener {
 				if (event.getClickedBlock() != null) {
 					int editCode = DataManager.getInstance().getPlotEditableCode(event.getClickedBlock().getX(),
 							event.getClickedBlock().getZ(), event.getPlayer().getName());
-					if (editCode == 0) {
+					if (editCode == 0 || editCode == 3) {
 						if (!(event.getClickedBlock().getState() instanceof Sign)
-								&& (event.getClickedBlock().getState() instanceof Lootable
+								&& (editCode == 0 && event.getClickedBlock().getState() instanceof Lootable
 										|| event.getClickedBlock().getType() == Material.OAK_DOOR
 										|| event.getClickedBlock().getBlockData() instanceof Furnace)
 								|| (event.getItem() != null
@@ -110,7 +110,8 @@ public class ProtectionListener implements Listener {
 												.getItem().getType().toString().toUpperCase().contains("BUCKET")
 												|| event.getItem().getType() == Material.END_CRYSTAL
 												|| event.getItem().getType() == Material.FIRE_CHARGE
-												|| event.getItem().getType() == Material.FLINT_AND_STEEL))))) {
+												|| event.getItem().getType() == Material.FLINT_AND_STEEL
+												|| event.getItem().getType() == Material.FIRE_CHARGE))))) {
 							event.setCancelled(true);
 							event.getPlayer().sendMessage(ChatColor.RED + "Cannot interact in this area!");
 						}
