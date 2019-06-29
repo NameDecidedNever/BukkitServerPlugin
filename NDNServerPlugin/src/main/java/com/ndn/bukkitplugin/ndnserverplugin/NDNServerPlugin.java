@@ -24,6 +24,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.DataManager;
 import com.ndn.bukkitplugin.ndnserverplugin.datautils.PlayerCombatPermissions;
+import com.ndn.bukkitplugin.ndnserverplugin.datautils.QuestCommandExecutor;
+import com.ndn.bukkitplugin.ndnserverplugin.datautils.QuestData;
 
 public class NDNServerPlugin extends JavaPlugin implements Listener {
     MoneyCommandExecutor mce;
@@ -31,8 +33,10 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
     SignShopListner ssl;
     ProtectionListener pl;
     ChatCencorListner ccl;
+    QuestListener ql;
     TownCommandExecutor tce;
     DebugCommandExecutor dce;
+    QuestCommandExecutor qce;
     
     HashMap<String, Long> playerSecondsOnline = new HashMap<String, Long>();
 
@@ -44,21 +48,26 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
 	spce = new SimplePaidCommandExecutor(this);
 	tce = new TownCommandExecutor(this);
 	dce = new DebugCommandExecutor(this);
+	qce = new QuestCommandExecutor(this);
 
 	ssl = new SignShopListner(this);
 	ccl = new ChatCencorListner(this);
 	pl = new ProtectionListener(this);
+	ql = new QuestListener(this);
 	getServer().getPluginManager().registerEvents(ssl, this);
 	getServer().getPluginManager().registerEvents(ccl, this);
 	getServer().getPluginManager().registerEvents(pl, this);
+	//getServer().getPluginManager().registerEvents(ql, this);
 	
 	getCommand("account").setExecutor(mce);
 	getCommand("spawn").setExecutor(spce);
 	getCommand("clearweather").setExecutor(spce);
 	getCommand("town").setExecutor(tce);
 	getCommand("dbinfo").setExecutor(dce);
+	getCommand("zombiepatrol").setExecutor(dce);
 	getCommand("signshop").setExecutor(ssl);
 	getCommand("executeexpenses").setExecutor(dce);
+	//getCommand("quest").setExecutor(qce);
 
 	recipieFurnace();
 
@@ -117,6 +126,7 @@ public class NDNServerPlugin extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent evt) {
     PlayerCombatPermissions.playerCombatPermissions.put(evt.getPlayer().getName(), new ArrayList<String>());
 	DataManager.getInstance().addPlayerIfNotExists(evt.getPlayer().getName());
+	QuestData.loadPlayerQuestPrgress(evt.getPlayer());
 	if(playerSecondsOnline.containsKey(evt.getPlayer().getName())) {
 		playerSecondsOnline.remove(evt.getPlayer().getName());
 	}
