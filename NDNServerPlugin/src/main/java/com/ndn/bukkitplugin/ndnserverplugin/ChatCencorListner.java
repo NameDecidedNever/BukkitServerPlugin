@@ -3,6 +3,7 @@ package com.ndn.bukkitplugin.ndnserverplugin;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -16,7 +17,7 @@ public class ChatCencorListner implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChatEvent(PlayerChatEvent event) {
+    public void onPlayerChatEvent(AsyncPlayerChatEvent event) {
 	if (event.getMessage().toLowerCase().contains("n word")) {
 	    plugin.getServer().broadcastMessage("" + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.YELLOW + "YOU CANT SAY THAT THATS RACIST!");
 	}
@@ -34,17 +35,24 @@ public class ChatCencorListner implements Listener {
 	    }
 	    if (s.equals("sleep") && Math.random() > .8 || s.equals("slep"))
 		s = ChatColor.RED + "slep" + ChatColor.RESET;
-	    if (s.equalsIgnoreCase("yeet"))
+	    else if (s.equalsIgnoreCase("yeet"))
 		s = "" + ChatColor.YELLOW + ChatColor.BOLD + ChatColor.ITALIC + "YEET" + ChatColor.RESET;
-	    if (s.equalsIgnoreCase("gay"))
+	    else if (s.equalsIgnoreCase("gay"))
 		s = ChatColor.LIGHT_PURPLE + s + ChatColor.RESET;
-	    if (s.equalsIgnoreCase("zzz"))
+	    else if (s.equalsIgnoreCase("zzz"))
 		s = "" + ChatColor.MAGIC;
-	    if(s.equalsIgnoreCase("#red"))
+	    else if(s.equalsIgnoreCase("#red"))
 	    message.append(ChatColor.RED);
-	    if(s.equalsIgnoreCase("#green"))
+	    else if(s.equalsIgnoreCase("#green"))
 		message.append(ChatColor.GREEN);
+	    else if(s.equalsIgnoreCase("#blue"))
+		message.append(ChatColor.BLUE);
+	    else if(s.equalsIgnoreCase("#yello"))
+			message.append(ChatColor.YELLOW);
+	    else
+	    message.append(s + " ");
 	}
 	event.setMessage(message.toString());
+	message = null;
     }
 }
