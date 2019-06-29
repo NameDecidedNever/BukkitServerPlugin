@@ -61,6 +61,8 @@ public class SignShop {
 		//using separate methods to get buy and sell price
 		double buy = getBuyPriceFromSignLine(sign.getLine(3));
 		double sell = getSellPriceFromSignLine(sign.getLine(3));
+		
+		sign = null;
 
 		return new SignShop(accNum, chest, item, amount, buy, sell);
 	}

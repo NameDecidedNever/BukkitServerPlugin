@@ -93,6 +93,8 @@ public class MobMoney implements Listener {
 
 					}
 				}
+				player = null;
+				monsterEnt = null;
 
 				// anti grind activated
 			} else {

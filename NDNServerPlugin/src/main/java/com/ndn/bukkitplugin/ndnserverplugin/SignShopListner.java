@@ -50,6 +50,7 @@ public class SignShopListner implements Listener, CommandExecutor {
 								}
 							}
 						}
+						signShop = null;
 					} catch (Exception e) {
 						player.sendMessage(e.getMessage());
 						System.err.print(e.getMessage());
@@ -57,6 +58,8 @@ public class SignShopListner implements Listener, CommandExecutor {
 				} else {
 					event.getPlayer().sendMessage(ChatColor.RED + "You can only use shops that exist in market plots!");
 				}
+				player = null;
+				sign = null;
 			}
 		}
 	}
