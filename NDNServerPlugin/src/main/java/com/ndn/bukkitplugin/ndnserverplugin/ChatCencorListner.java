@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 
 public class ChatCencorListner implements Listener {
-    static String[] bannedList = { "nigger", "chink", "gouk", "towelhead", "negro", "beaner", "nigga" };
+    static String[] bannedList = { "nigger", "chink", "gouk", "towelhead", "negro", "beaner", "nigga", "nibba", "nigg" };
 
     Plugin plugin;
 
@@ -40,7 +40,10 @@ public class ChatCencorListner implements Listener {
 		s = ChatColor.LIGHT_PURPLE + s + ChatColor.RESET;
 	    if (s.equalsIgnoreCase("zzz"))
 		s = "" + ChatColor.MAGIC;
-	    message.append(s + " ");
+	    if(s.equalsIgnoreCase("#red"))
+	    message.append(ChatColor.RED);
+	    if(s.equalsIgnoreCase("#green"))
+		message.append(ChatColor.GREEN);
 	}
 	event.setMessage(message.toString());
     }
