@@ -33,14 +33,21 @@ public class ChatCencorListner implements Listener {
 		    s = sSB.toString();
 		}
 	    }
-	    if (s.equals("sleep") && Math.random() > .8 || s.equals("slep"))
+	    if (s.equals("sleep") && Math.random() > .8 || s.equals("slep")) {
 		s = ChatColor.RED + "slep" + ChatColor.RESET;
-	    else if (s.equalsIgnoreCase("yeet"))
+		message.append(s + " ");
+	    }
+	    else if (s.equalsIgnoreCase("yeet")) {
 		s = "" + ChatColor.YELLOW + ChatColor.BOLD + ChatColor.ITALIC + "YEET" + ChatColor.RESET;
-	    else if (s.equalsIgnoreCase("gay"))
+	    }
+	    else if (s.equalsIgnoreCase("gay")) {
 		s = ChatColor.LIGHT_PURPLE + s + ChatColor.RESET;
-	    else if (s.equalsIgnoreCase("zzz"))
+		message.append(s + " ");
+	    }
+	    else if (s.equalsIgnoreCase("zzz")) {
 		s = "" + ChatColor.MAGIC;
+		message.append(s + " ");
+	    }
 	    else if(s.equalsIgnoreCase("#red"))
 	    message.append(ChatColor.RED);
 	    else if(s.equalsIgnoreCase("#green"))
@@ -48,7 +55,7 @@ public class ChatCencorListner implements Listener {
 	    else if(s.equalsIgnoreCase("#blue"))
 		message.append(ChatColor.BLUE);
 	    else if(s.equalsIgnoreCase("#yello"))
-			message.append(ChatColor.YELLOW);
+		message.append(ChatColor.YELLOW);
 	    else
 	    message.append(s + " ");
 	}
