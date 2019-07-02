@@ -99,7 +99,7 @@ public class MobMoney implements Listener {
 
 				// anti grind activated
 			} else {
-				if(playerLastKillLocations.get(player.getName()).getKills() > 3) {
+				if(playerLastKillLocations.get(player.getName()).getKills() > 8) {
 				player.sendMessage(
 						ChatColor.RED + "Grinding Detected. Move away to stop grinding.");
 				}
