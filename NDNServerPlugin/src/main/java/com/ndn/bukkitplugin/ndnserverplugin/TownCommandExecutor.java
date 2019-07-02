@@ -323,14 +323,23 @@ public class TownCommandExecutor implements CommandExecutor {
 					String message3 = ChatColor.GREEN + " for your warp";
 					String message4 = ChatColor.YELLOW + "$"
 							+ new java.text.DecimalFormat("0.00").format(additionalCostToPlayer);
+					if(totalCostToPlayer > 0) {
 					player.sendMessage(message1 + message2 + message3);
+					} else {
+						player.sendMessage(ChatColor.GREEN + "You Warped for Free!");
+					}
 				
 					player.sendTitle(ChatColor.YELLOW + townName, ChatColor.GREEN + DataManager.getInstance().getTownMotd(townId), 5, 55, 5);
 					try {
+						if(additionalCostToPlayer >= 0.01) {
 						plugin.getServer().getPlayer(DataManager.getInstance().getTownOwnerName(townId))
-								.sendMessage(ChatColor.GREEN + "Recieved town warp tax income " + message4);
+								.sendMessage(ChatColor.GREEN + "Recieved town warp tax income " + message4 + ChatColor.GREEN + " from " + ChatColor.YELLOW + player.getName());
+						} else {
+							plugin.getServer().getPlayer(DataManager.getInstance().getTownOwnerName(townId))
+							.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.GREEN + " warped to your town for free.");
+						}
 					} catch (Exception e) {
-
+						//nothing to see here :)
 					}
 				} else {
 					player.sendMessage(ChatColor.RED + "You do not have enough account balance to pay for this warp!");
