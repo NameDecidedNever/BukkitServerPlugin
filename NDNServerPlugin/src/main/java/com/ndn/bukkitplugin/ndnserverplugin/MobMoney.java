@@ -87,8 +87,9 @@ public class MobMoney implements Listener {
 								.getPlayer(DataManager.getInstance().getTownOwnerName(townId));
 						String valueMessage = ChatColor.YELLOW + "$"
 								+ new java.text.DecimalFormat("0.00").format(townPayment);
-						townOwnerPlayer
-								.sendMessage(ChatColor.GREEN + "Recieved a mob kill tax reward of " + valueMessage);
+						if(townPayment >= .01) {
+						townOwnerPlayer.sendMessage(ChatColor.GREEN + "Recieved a mob kill tax reward of " + valueMessage + ChatColor.GREEN + " from " + ChatColor.YELLOW + player.getName());
+						}
 					} catch (Exception e) {
 
 					}
@@ -98,8 +99,10 @@ public class MobMoney implements Listener {
 
 				// anti grind activated
 			} else {
+				if(playerLastKillLocations.get(player.getName()).getKills() > 3) {
 				player.sendMessage(
 						ChatColor.RED + "Grinding Detected. Move away to stop grinding.");
+				}
 			}
 
 		}
