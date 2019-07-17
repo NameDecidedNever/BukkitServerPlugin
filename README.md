@@ -1,3 +1,6 @@
+[![Generic badge](https://img.shields.io/badge/Verfied-Disfunctional-green.svg)](https://shields.io/)
+
+
 # BukkitServerPlugin
 A Bukkit API based Minecraft server plugin for the NDN 2019 Summer Server
 
