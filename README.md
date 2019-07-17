@@ -1,4 +1,4 @@
-[![Generic badge](https://img.shields.io/badge/Verfied-Disfunctional-red.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/Update-AutoMessagesMatthew-green.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/DevOps-Special Operations Tactical-blue.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/Verfied-Disfunctional-red.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/Update-Auto_Messages_Matthew-green.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/DevOps-Special_Operations_Tactical-blue.svg)](https://shields.io/)
 
 
 # BukkitServerPlugin
