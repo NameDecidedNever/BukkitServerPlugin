@@ -1,8 +1,8 @@
 [![Generic badge](https://img.shields.io/badge/Verfied-Disfunctional-red.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/Update-Auto_Messages_Matthew-green.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/DevOps-Special_Operations_Tactical-blue.svg)](https://shields.io/)
 [![saythanks](https://img.shields.io/badge/say-thanks-ff69b4.svg)](https://saythanks.io/to/kennethreitz)
+![bigdata](https://img.shields.io/badge/big-data-blue.svg)
 [![saythanks](https://img.shields.io/badge/spgeti-code-yellow.svg)](https://saythanks.io/to/kennethreitz)
 ![devops](https://www.callofduty.com/content/dam/atvi/callofduty/ghosts/images/Ghosts_Merrick_Cover.jpg)
-![bigdata](https://img.shields.io/badge/big-data-blue.svg)
 Us doing are DevOps in afcomputerstan
 # BukkitServerPlugin
 A Bukkit API based Minecraft server plugin for the NDN 2019 Summer Server
