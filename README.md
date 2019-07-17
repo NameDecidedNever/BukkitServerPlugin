@@ -4,7 +4,7 @@
 ![learning](https://img.shields.io/badge/machine-learning-red.svg)
 ![bigdata](https://img.shields.io/badge/big-data-blue.svg)
 [![saythanks](https://img.shields.io/badge/spgeti-code-yellow.svg)](https://saythanks.io/to/kennethreitz)
-![devops](<a href="https://ibb.co/Tt7yzxF"><img src="https://i.ibb.co/VTz6XcP/devops.jpg" alt="devops" border="0"></a><br /><a target='_blank' href='https://movieplotholes.com/angels-and-demons'>angels and demons summary</a><br />)
+![devops](https://i.ibb.co/kXwZYsW/devops.jpg)
 Us doing tactical DevOps in afcomputerstan
 # BukkitServerPlugin
 A Bukkit API based Minecraft server plugin for the NDN 2019 Summer Server
